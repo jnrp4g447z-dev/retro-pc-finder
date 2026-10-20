@@ -4,5 +4,6 @@ Eine kleine Webseite für alle, die sich einen Retro-PC bauen wollen: Baujahr un
 
 - Eine einzige Datei: `index.html` (kein Build, keine Abhängigkeiten, keine externen Anfragen: die Schriften IBM Plex und VT323 sind eingebettet, Lizenz SIL Open Font License)
 - Preise und Termine sind grobe Richtwerte aus eigener Recherche, keine Gewähr.
+- Fotos und Logos stammen von Wikimedia Commons (freie Lizenzen), der Bildnachweis steht am Ende der Seite.
 
 Privates Hobbyprojekt, nicht kommerziell.
