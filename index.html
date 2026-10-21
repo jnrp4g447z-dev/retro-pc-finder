@@ -193,6 +193,20 @@ input[type=range]{
 .tier-btn[aria-pressed="true"] .lbl,
 .tier-btn[aria-pressed="true"] .sub{color:var(--accent-ink);}
 
+/* ---------- Quartalsleiste ---------- */
+.q-row{margin-bottom:0;}
+.q-row .tier-btn{flex:1 1 84px; padding:9px 12px;}
+.q-row .tier-btn:first-child{flex:1.5 1 130px;}
+.q-hint{font-size:13px; color:var(--ink-faint); line-height:1.45; margin:8px 2px 14px;}
+.q-meta{display:block; font-size:12px; font-weight:400; color:var(--ink-faint); line-height:1.35;}
+.q-new{grid-column:1 / -1;}
+.q-new details{margin-top:6px;}
+.q-new summary{cursor:pointer; font-size:13.5px; font-weight:600; padding:4px 0;}
+.q-item{display:flex; gap:10px; font-size:13.5px; line-height:1.4; padding:4px 0; border-top:1px dashed var(--line);}
+.q-item .q-d{flex:0 0 92px; color:var(--ink-faint); font-family:'IBM Plex Mono',monospace; font-size:12px; padding-top:1px;}
+.q-item .q-n{font-weight:500;}
+@media (max-width:640px){ .q-item{flex-direction:column; gap:0;} .q-item .q-d{flex:none;} }
+
 /* ---------- build sheet ---------- */
 .sheet-grid{
   display:grid;
@@ -512,6 +526,17 @@ html[data-skin="xp"] footer{color:#303030;}
       <div class="year-ticks mono"><span>1995</span><span>2000</span><span>2005</span><span>2010</span></div>
     </div>
     <p class="bios-summary" id="yearSummary"></p>
+  </section>
+
+  <section aria-label="Quartal wählen">
+    <div class="tier-row q-row" id="quarterRow">
+      <button class="tier-btn" data-q="0" type="button" aria-pressed="true"><span class="lbl">Ganzes Jahr</span><span class="sub">Jahreswert</span></button>
+      <button class="tier-btn" data-q="1" type="button" aria-pressed="false"><span class="lbl">Q1</span><span class="sub">Jan–Mär</span></button>
+      <button class="tier-btn" data-q="2" type="button" aria-pressed="false"><span class="lbl">Q2</span><span class="sub">Apr–Jun</span></button>
+      <button class="tier-btn" data-q="3" type="button" aria-pressed="false"><span class="lbl">Q3</span><span class="sub">Jul–Sep</span></button>
+      <button class="tier-btn" data-q="4" type="button" aria-pressed="false"><span class="lbl">Q4</span><span class="sub">Okt–Dez</span></button>
+    </div>
+    <p class="q-hint" id="quarterHint"></p>
   </section>
 
   <section aria-label="Preisklasse">
@@ -986,7 +1011,7 @@ const TIERS=['low','mid','high'];
 const GPU_ORDER=['nvidia','ati','3dfx','matrox','s3','other'];
 const GPU_LABEL={nvidia:'NVIDIA',ati:'ATI',"3dfx":'3dfx',matrox:'Matrox',s3:'S3',other:'Sonstige'};
 
-let state={year:2004,tier:'high'};
+let state={year:2004,tier:'high',q:0};   // q: 0 = ganzes Jahr, 1-4 = Quartal
 
 function eraLabel(y){
   if(y<1990) return 'XT/AT-ÄRA';
@@ -1012,8 +1037,107 @@ function plainText(entry){
   return entry;
 }
 
+/* ================= Quartale ================= */
+// Alles stammt aus CATALOG (sk = JJJJMMTT). Die Einordnung in Einstieg/Mittelklasse/High-End ist eine Regel nach Modellreihe (Richtwert).
+const Q_BACK_MONTHS=15;
+function datePrec(d){
+  if(/^\d\d\.\d\d\.\d{4}/.test(d)) return 'tag';
+  if(/^(Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dez)/.test(d)) return 'monat';
+  if(d.startsWith('Q')) return 'quartal';
+  return 'jahr';
+}
+function cpuTier(x){
+  const m=x.model;
+  if(/OverDrive|Pentium Pro|Xeon|Opteron|Mobile|Cx5x86|6x86|Am5x86|Am486|i486|DX4/.test(m) || x.mfr==='Cyrix') return null;
+  if(/Celeron|Sempron|Duron|Pentium Dual-Core|Athlon LE|Athlon II X2|Core i3/.test(m)) return 0;
+  if(/Extreme|QX|Core 2 Quad|Core i7|Phenom II X[46]|Phenom X4|Athlon 64 FX|\bFX-/.test(m)) return 2;
+  if(/Athlon 64 X2 [5-9]\d\d\d/.test(m)) return 2;
+  if(/Pentium 4 (EE|Extreme)/.test(m)) return 2;
+  return 1;
+}
+function gpuTier(x){
+  const k=((x.klass||'').split('/')[0]).trim();
+  if(k.startsWith('Einstieg')) return 0;
+  if(k.startsWith('Mittelklasse')) return 1;
+  if(k.startsWith('Leistung')||k.startsWith('Spitzenklasse')) return 2;
+  return null;
+}
+function gpuBrandOf(x){
+  const m=x.mfr.toLowerCase();
+  if(m.includes('nvidia')) return 'nvidia';
+  if(m.split(' ')[0]==='ati') return 'ati';
+  if(m.includes('3dfx')) return '3dfx';
+  return null;
+}
+function qDay(sk){const mo=Math.floor(sk/100)%100; return Math.floor(sk/10000)*372+Math.max(mo,1)*31+sk%100;}
+function qPick(c,tier){
+  if(!c.length) return null;
+  const top=Math.max(...c.map(x=>x.sk));
+  const grp=c.filter(x=>qDay(top)-qDay(x.sk)<=75).sort((a,b)=>((a.clock||0)-(b.clock||0)) || (a.model<b.model?-1:1));
+  return tier===0 ? grp[0] : tier===2 ? grp[grp.length-1] : grp[Math.floor(grp.length/2)];
+}
+const Q_CACHE={};
+function quarterData(y,q){
+  const key=y+'-'+q;
+  if(Q_CACHE[key]) return Q_CACHE[key];
+  const end=y*10000+q*300+31, qs=y*10000+((q-1)*3+1)*100;
+  const sm0=(q-1)*3+1-Q_BACK_MONTHS, sy=y+Math.floor((sm0-1)/12), sm=(((sm0-1)%12)+12)%12+1, start=sy*10000+sm*100;
+  const cpus=CATALOG.cpu.filter(x=>datePrec(x.date)!=='jahr'), gpus=CATALOG.gpu.filter(x=>datePrec(x.date)!=='jahr');
+  const pick={};
+  for(let t=0;t<3;t++){
+    ['Intel','AMD'].forEach(v=>{
+      const p=qPick(cpus.filter(x=>x.mfr===v && cpuTier(x)===t && x.sk>=start && x.sk<=end),t);
+      if(p) pick['cpu_'+v.toLowerCase()+'_'+t]=p;
+    });
+    ['ati','nvidia','3dfx'].forEach(b=>{
+      const p=qPick(gpus.filter(x=>gpuBrandOf(x)===b && gpuTier(x)===t && x.sk>=start && x.sk<=end),t);
+      if(p) pick['gpu_'+b+'_'+t]=p;
+    });
+  }
+  const byDate=(a,b)=>(a.sk-b.sk)||(a.model<b.model?-1:1);
+  const nu={cpu:cpus.filter(x=>x.sk>=qs&&x.sk<=end).sort(byDate), gpu:gpus.filter(x=>x.sk>=qs&&x.sk<=end).sort(byDate)};
+  const yearOnly=CATALOG.cpu.concat(CATALOG.gpu).filter(x=>x.y===y && datePrec(x.date)==='jahr').length;
+  return Q_CACHE[key]={pick,nu,yearOnly};
+}
+function qNameCpu(x){return `${x.mfr} ${x.model}<span class="q-meta">${[x.core,x.socket,x.clock?x.clock+' MHz':''].filter(Boolean).join(', ')} · ${x.date}</span>`;}
+function qNameGpu(x){return `${x.mfr} ${x.model}<span class="q-meta">${[x.chip,x.bus].filter(Boolean).join(', ')} · ${x.date}</span>`;}
+function qYearTag(html){return `<div><span class="tag-pill">JAHRESWERT</span>${html}</div>`;}
+function qCpuRows(d,tIdx){
+  const qd=quarterData(state.year,state.q);
+  return ['intel','amd'].map(v=>{
+    const p=qd.pick['cpu_'+v+'_'+tIdx];
+    const inner = p ? `<div>${qNameCpu(p)}</div>` : qYearTag(entryHtml(d[v][tIdx]).replace(/^<div>|<\/div>$/g,''));
+    return `<div class="spec-row"><span class="who">${v.toUpperCase()}</span><span class="val">${inner}</span></div>`;
+  }).join('');
+}
+function qGpuRows(d,tIdx){
+  const qd=quarterData(state.year,state.q), rows=[];
+  GPU_ORDER.forEach(brand=>{
+    const p=qd.pick['gpu_'+brand+'_'+tIdx];
+    const arr=d.gpu[brand], yv=arr?arr[tIdx]:null;
+    if(p) rows.push(`<div class="gpu-opt"><span class="gpu-tag">${GPU_LABEL[brand]}</span><span class="gpu-val"><div>${qNameGpu(p)}</div></span></div>`);
+    else if(yv) rows.push(`<div class="gpu-opt"><span class="gpu-tag">${GPU_LABEL[brand]}</span><span class="gpu-val">${qYearTag(entryHtml(yv).replace(/^<div>|<\/div>$/g,''))}</span></div>`);
+  });
+  return rows.join('') || `<div class="empty-note">Für ${d.y} Q${state.q} liegt hier keine Angabe vor.</div>`;
+}
+function qNote(){
+  if(!state.q) return '';
+  return `<div class="opt-note">Quartalsstand: neuestes passendes Modell aus dem Katalog bis Ende Q${state.q} ${state.year} (Rückblick ${Q_BACK_MONTHS} Monate). Die Preisklasse folgt der Modellreihe, ein Richtwert. „Jahreswert“ = für diese Klasse gibt es im Zeitraum keinen passenden Katalogeintrag.</div>`;
+}
+function qNewHtml(){
+  if(!state.q) return '';
+  const qd=quarterData(state.year,state.q);
+  const list=(arr,nameFn,title)=>arr.length ? `<details open><summary>${title} (${arr.length})</summary>${arr.map(x=>`<div class="q-item"><span class="q-d">${x.date}</span><span class="q-n">${nameFn(x)}</span></div>`).join('')}</details>` : '';
+  const cpuName=x=>`${x.mfr} ${x.model}<span class="q-meta">${[x.core,x.socket,x.clock?x.clock+' MHz':''].filter(Boolean).join(', ')}</span>`;
+  const gpuName=x=>`${x.mfr} ${x.model}<span class="q-meta">${[x.chip,x.bus,x.klass].filter(Boolean).join(', ')}</span>`;
+  const body=list(qd.nu.cpu,cpuName,'Neue Prozessoren')+list(qd.nu.gpu,gpuName,'Neue Grafikchips/-karten');
+  const rest=qd.yearOnly ? `<div class="opt-note">${qd.yearOnly} weitere Einträge aus ${state.year} haben nur eine Jahresangabe und stehen im Hardware-Katalog, nicht in den Quartalen.</div>` : '';
+  return `<div class="card q-new"><div class="cat">Neu in Q${state.q} ${state.year}</div>${body||'<div class="empty-note">Im Katalog ist für dieses Quartal nichts eingetragen.</div>'}${rest}${qNote()}</div>`;
+}
+
 function cpuRowsHtml(d){
   const tIdx=TIERS.indexOf(state.tier);
+  if(state.q) return qCpuRows(d,tIdx);
   return `<div class="spec-row"><span class="who">INTEL</span><span class="val">${entryHtml(d.intel[tIdx])}</span></div>`
        + `<div class="spec-row"><span class="who">AMD</span><span class="val">${entryHtml(d.amd[tIdx])}</span></div>`;
 }
@@ -1038,6 +1162,7 @@ function soundHtml(d){
 
 function gpuHtml(d){
   const tIdx=TIERS.indexOf(state.tier);
+  if(state.q) return qGpuRows(d,tIdx);
   const rows=[];
   GPU_ORDER.forEach(brand=>{
     const arr=d.gpu[brand];
@@ -1083,7 +1208,7 @@ function totalPriceHtml(pr, year){
 function render(){
   const d=byYear[state.year];
   document.getElementById('yearDigits').textContent=state.year;
-  document.getElementById('eraLabel').textContent=eraLabel(state.year);
+  document.getElementById('eraLabel').textContent=eraLabel(state.year)+(state.q?' · Q'+state.q:'');
   document.getElementById('yearSlider').value=state.year;
   document.getElementById('yearSummary').textContent=d.s;
   document.getElementById('yearPrev').disabled = state.year<=YEAR_MIN;
@@ -1093,6 +1218,12 @@ function render(){
     btn.setAttribute('aria-pressed', String(btn.dataset.tier===state.tier));
   });
 
+  document.querySelectorAll('#quarterRow .tier-btn').forEach(btn=>{
+    btn.setAttribute('aria-pressed', String(Number(btn.dataset.q)===state.q));
+  });
+  document.getElementById('quarterHint').textContent = state.q
+    ? `Stand Ende Q${state.q} ${state.year}: Prozessor und Grafik sind das neueste passende Modell aus dem Katalog. Mainboard, RAM, Festplatte, Sound, Betriebssystem und Preise gelten weiter für das ganze Jahr.`
+    : 'Tipp: Mit Q1–Q4 siehst du Prozessor und Grafik im Stand des jeweiligen Quartals, dazu die Neuheiten dieses Quartals.';
   const tIdx=TIERS.indexOf(state.tier);
   const grid=document.getElementById('sheetGrid');
   const py=Math.max(1985,Math.min(2010,state.year));
@@ -1105,6 +1236,7 @@ function render(){
     <div class="card"><div class="cat">Festplatte</div>${singleHtml(d.hdd)}${priceLine(pr.hdd,py)}</div>
     <div class="card"><div class="cat">Soundkarte</div>${soundHtml(d)}${priceLine(pr.sound,py)}</div>
     <div class="card"><div class="cat">Betriebssystem</div>${osHtml(py)}</div>
+    ${qNewHtml()}
     <div class="card price-total"><div class="cat">Gesamtpreis (ca.)</div>${totalPriceHtml(pr,py)}</div>
   `;
 
@@ -1149,6 +1281,13 @@ document.getElementById('yearNext').addEventListener('click',()=>{
 document.querySelectorAll('#tierRow .tier-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     state.tier=btn.dataset.tier;
+    render();
+  });
+});
+
+document.querySelectorAll('#quarterRow .tier-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    state.q=Number(btn.dataset.q);
     render();
   });
 });
