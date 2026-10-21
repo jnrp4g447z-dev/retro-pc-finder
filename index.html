@@ -565,6 +565,13 @@ html[data-skin="xp"] thead th{background:linear-gradient(to bottom,#ffffff,#ece9
 html[data-skin="xp"] .card .cat,html[data-skin="xp"] .gen-col h3{color:#0a3da8;}
 html[data-skin="xp"] .skin-box{color:#000;}
 html[data-skin="xp"] footer{color:#303030;}
+/* ---------- Wikipedia-Links ---------- */
+a.wp{font-size:11px; font-weight:400; margin-left:6px; white-space:nowrap; text-decoration:none; color:var(--accent); border-bottom:1px dotted currentColor; font-family:'IBM Plex Mono',monospace; letter-spacing:0;}
+a.wp:hover,a.wp:focus-visible{border-bottom-style:solid;}
+html[data-skin="win311"] a.wp,html[data-skin="win98"] a.wp,html[data-skin="winme"] a.wp,html[data-skin="win2000"] a.wp{color:#0000ff;}
+html[data-skin="xp"] a.wp{color:#0a3da8;}
+html[data-skin="bios"] a.wp,html[data-skin="dos"] a.wp{color:#ffffff;}
+
 /* ---------- Abstände (alle Designs) ---------- */
 #viewReco > * + *,#viewCatalog > * + *,#viewGen > * + *,#viewShuttle > * + *,#viewOs > * + *{margin-top:20px;}
 #genWavePane > * + *{margin-top:16px;}
@@ -864,6 +871,7 @@ html[data-skin="dos"] footer#credits::after{content:"C:\\RETRO-PC-FINDER>_"; dis
 
   <footer id="credits">
     <p class="credit-note"><strong>Zu den Designs:</strong> Die Windows- und DOS-Designs sind Nachbauten im Stil der jeweiligen Oberfläche, mit eigenen Zeichnungen und Farbwerten; sie enthalten keine Dateien von Microsoft. Alle Schriften sind eingebettet (IBM Plex, VT323, Noto Sans, Pixelify Sans; SIL Open Font License), es wird nichts nachgeladen.</p>
+    <p class="credit-note"><strong>Zu den Wikipedia-Links:</strong> „Wiki ↗“ führt zum Wikipedia-Artikel der Baureihe bzw. des Herstellers (deutsch, sonst englisch), nicht zu einzelnen Modellen. Die Links wurden geprüft; ohne passenden Artikel gibt es keinen Link. Beim Laden der Seite wird nichts von Wikipedia abgerufen, erst beim Klick.</p>
     <details><summary>Bildnachweis</summary><div id="creditList" class="credit-list"></div></details>
   </footer>
 
@@ -1127,6 +1135,32 @@ const D = [
 
 const byYear = {};
 D.forEach(d=>byYear[d.y]=d);
+/* ================= wikipedia-links ================= */
+// Je Baureihe ein geprüfter Artikel (de, sonst en). Einordnung per Regel auf den Modellnamen; ohne passenden Artikel kein Link.
+const WIKI = {"cpu":[["OverDrive",["en","Pentium OverDrive"]],["Pentium Pro",["de","Intel Pentium Pro"]],["Pentium MMX",["de","Intel Pentium"]],["Pentium II\\b",["de","Intel Pentium II"]],["Pentium III-S|Pentium III",["de","Intel Pentium III"]],["Pentium 4",["de","Intel Pentium 4"]],["Pentium Extreme",["de","Intel Pentium D"]],["Pentium D\\b",["de","Intel Pentium D"]],["Pentium (E|G)\\d",["de","Intel Pentium"]],["Pentium Dual-Core",["en","Pentium Dual-Core"]],["Intel Pentium \\d",["de","Intel Pentium"]],["Celeron D",["de","Intel Celeron"]],["Celeron",["de","Intel Celeron"]],["Core 2",["de","Intel Core 2"]],["Core i7",["de","Intel-Core-i-Serie"]],["Core i5",["de","Intel-Core-i-Serie"]],["Core i3",["de","Intel-Core-i-Serie"]],["i486|DX4|486",["de","Intel 80486"]],["Am486|Am5x86|Am5x86",["de","AMD Am5x86"]],["Am386|386",["de","Intel 80386"]],["K5\\b",["de","AMD K5"]],["K6-III",["de","AMD K6-III"]],["K6-2",["de","AMD K6-2"]],["\\bK6\\b",["de","AMD K6"]],["Athlon 64 X2",["de","AMD Athlon 64 X2"]],["Athlon 64 FX|\\bFX-",["de","AMD Athlon 64 FX"]],["Athlon 64",["de","AMD Athlon 64"]],["Athlon XP",["de","AMD Athlon XP"]],["Athlon X2|Athlon 7750|Athlon X2 BE",["de","AMD Athlon 64 X2"]],["Athlon II",["de","AMD Athlon II"]],["Athlon LE|Athlon \\d",["de","AMD Athlon"]],["Sempron",["de","AMD Sempron"]],["Duron",["de","AMD Duron"]],["Phenom II",["de","AMD Phenom II"]],["Phenom",["de","AMD Phenom"]],["Cyrix|6x86|Cx5x86",["de","Cyrix 6x86"]]],"gpu":[["NV1\\b",["en","NV1"]],["RIVA 128",["de","Nvidia Riva"]],["RIVA TNT2|Vanta",["en","RIVA TNT2"]],["RIVA TNT",["en","RIVA TNT"]],["GeForce 256",["en","GeForce 256"]],["GeForce PCX ?5|GeForce PCX [5]",["de","Nvidia-GeForce-FX-Serie"]],["GeForce ?2 ",["de","Nvidia-GeForce-2-Serie"]],["GeForce ?2\\b",["de","Nvidia-GeForce-2-Serie"]],["GeForce ?3",["en","GeForce 3 series"]],["GeForce ?4|GeForce PCX",["en","GeForce 4 series"]],["GeForce FX",["de","Nvidia-GeForce-FX-Serie"]],["GeForce 6",["en","GeForce 6 series"]],["GeForce 7",["en","GeForce 7 series"]],["GeForce 8",["en","GeForce 8 series"]],["GeForce 9",["en","GeForce 9 series"]],["GeForce (1[0-9]{2}|2[0-9]{2})\\b",["en","GeForce 200 series"]],["GeForce (3[0-9]{2})\\b",["en","GeForce 300 series"]],["GeForce (4[0-9]{2}|GTX 4|GTS 4)",["en","GeForce 400 series"]],["GeForce (5[0-9]{2}|GTX 5)",["en","GeForce 500 series"]],["Nvidia|NVIDIA",["de","Nvidia"]],["Rage Fury MAXX",["en","ATI Rage"]],["Rage 128|Rage Fury",["en","ATI Rage"]],["Rage|Mach64|Mach32",["de","ATI Rage"]],["VGA Wonder|VGA Charger|Mach",["de","ATI Technologies"]],["Radeon (7000|7200|7500|VE|SDR|DDR|LE)|Radeon (SDR|DDR|VE)",["en","Radeon R100 series"]],["Radeon (8500|9000|9100|9200|9250)",["de","ATI-Radeon-8000-Serie"]],["Radeon (9500|9550|9600|9700|9800)",["en","Radeon R300 series"]],["Radeon X(3|5|6|7|8)\\d\\d|Radeon X[0-9]00",["en","Radeon X800 series"]],["Radeon X1",["en","Radeon X1000 series"]],["Radeon HD ?2",["en","Radeon HD 2000 series"]],["Radeon HD ?3",["de","ATI-Radeon-HD-3000-Serie"]],["Radeon HD ?4",["de","ATI-Radeon-HD-4000-Serie"]],["Radeon HD ?5",["en","Radeon HD 5000 series"]],["Radeon",["de","AMD Radeon"]],["ATI",["de","ATI Technologies"]],["Voodoo Graphics|Voodoo 1\\b",["de","3dfx Voodoo Graphics"]],["Voodoo Rush",["de","3dfx Voodoo Rush"]],["Voodoo ?2",["de","3dfx Voodoo 2"]],["Voodoo Banshee|Banshee",["de","3dfx Voodoo Banshee"]],["Voodoo ?3|Velocity",["de","3dfx Voodoo 3"]],["Voodoo ?4|Voodoo ?5",["en","Voodoo 5"]],["3dfx",["de","3dfx"]],["Millennium",["de","Matrox Electronic Systems"]],["Mystique",["en","Matrox Mystique"]],["G(100|200|250)",["en","Matrox G200"]],["G(400|450|550)",["en","Matrox G400"]],["Parhelia|P650|P690",["en","Matrox Parhelia"]],["Matrox",["de","Matrox Electronic Systems"]],["ViRGE|Trio3D|Trio64V2",["de","S3 ViRGE"]],["Trio",["en","S3 Trio"]],["Savage",["de","S3 Savage"]],["DeltaChrome|GammaChrome",["de","S3 Chrome"]],["S3 ",["de","S3 Graphics"]],["i740|i752",["en","Intel740"]],["Kyro",["de","ST Kyro"]],["PowerVR|PCX|Neon",["de","PowerVR Technologies"]],["Vérité|Verite|Rendition",["en","Vérité"]],["Xabre",["de","Silicon Integrated Systems"]],["SiS ",["de","Silicon Integrated Systems"]],["Volari",["de","XGI Volari"]],["XGI",["de","XGI Technology Inc."]],["Trident",["de","Trident Microsystems"]],["Cirrus",["de","Cirrus Logic"]],["Tseng|ET4000|ET6000",["de","Tseng Labs"]],["Permedia",["en","3Dlabs"]],["Wildcat|Oxygen|3Dlabs",["de","3DLabs"]],["Oak Tech",["de","Oak Technology"]],["Paradise|WD90",["de","Western Digital"]],["Number Nine|Imagine|Revolution",["de","Number Nine"]]],"sound":[["Game Blaster|Creative Music System",["en","Sound Blaster"]],["Sound Blaster 1\\.|Sound Blaster 2\\.",["de","Sound Blaster"]],["Sound Blaster Pro",["en","Sound Blaster"]],["Sound Blaster (16|Vibra)",["de","Sound Blaster"]],["AWE ?32|Sound Blaster 32",["en","Sound Blaster AWE32"]],["AWE ?64",["en","Sound Blaster AWE64"]],["PCI ?(64|128)",["de","Sound Blaster"]],["Live!",["en","Sound Blaster Live!"]],["Audigy",["en","Sound Blaster Audigy"]],["X-Fi",["en","Sound Blaster X-Fi"]],["Wave Blaster",0],["Creative",["de","Sound Blaster"]],["AdLib|Ad Lib",["de","AdLib"]],["UltraSound|Ultrasound",["de","Gravis Ultrasound"]],["Pro AudioSpectrum|Media Vision",["en","Media Vision Pro AudioSpectrum"]],["Windows Sound System",["de","Windows Sound System"]],["SCC-1|SCB-55|SC-55|LAPC|RAP-10|Sound Canvas",["en","Roland Sound Canvas"]],["MT-32",["de","Roland MT-32"]],["MultiSound|Maui|Tropez|Tahiti|Rio\\b|Monterey|Monte Carlo|Malibu|Daytona|Santa Cruz|Montego|Fiji|Pinnacle|Cancun|Turtle Beach",["en","Turtle Beach Corporation"]],["Vortex|SQ2|SQ3|Aureal|Sonic Impact|Monster Sound M[XA]",["en","Aureal Semiconductor"]],["Soundscape|AudioPCI|Ensoniq",["de","Ensoniq"]],["ES1370|AudioDrive|Solo-1|ESS",["en","ESS Technology"]],["DB50XG|YMF|Yamaha|WaveForce|DS-XG",["en","Yamaha XG"]],["Xonar",["en","Asus Xonar"]],["Aztech|Sound Galaxy|Waverider|WavePower|Multimedia Pro|Multimedia Audio",0],["Terratec|Maestro|XLerate|EWS64|Aureon|DMX|6fire",["en","TerraTec"]],["Diamond|Monster Sound",["de","Diamond Multimedia"]],["Gravis",["de","Gravis Ultrasound"]],["CMI8738|C-Media",["en","C-Media"]],["Revolution|M-Audio",["en","M-Audio"]],["E-MU|1212M|1820",["en","E-mu Systems"]],["Auzentech|X-Meridian",["en","Auzentech"]],["Crystal|CS42",["de","Cirrus Logic"]],["Genius|Sound Maker",["en","KYE Systems"]]],"board":[["430LX|430NX|430FX|430HX|430VX|430TX",["en","Intel 430FX"]],["440BX|440LX|440EX|440FX|440GX|440ZX",["en","Intel 440BX"]],["\\b(810|815|820|840)\\b",["en","List of Intel chipsets"]],["\\b(845|850|865|875)",["en","List of Intel chipsets"]],["\\b(915|925|945|955)",["en","List of Intel chipsets"]],["\\bP965|\\bP35|\\bX38|\\bX48|\\b965|\\bG33|\\bP45|\\bX58|\\bP55|\\bH55|\\bH57",["en","List of Intel chipsets"]],["AMD 750|AMD 760|Irongate",["en","List of AMD chipsets"]],["AMD 7[89]0|AMD 8[0-9]0|AMD 990|AMD 690",["en","List of AMD chipsets"]],["VIA KT|VIA K8T|VIA ",["de","VIA Technologies"]],["nForce",["en","NForce"]]],"os":{"dos3":["de","MS-DOS"],"dos331":["de","MS-DOS"],"dos4":["de","MS-DOS"],"dos5":["de","MS-DOS"],"dos6":["de","MS-DOS"],"dos62":["de","MS-DOS"],"dos622":["de","MS-DOS"],"pcdos7":["de","PC DOS"],"dos71":["de","MS-DOS"],"dos8":["de","MS-DOS"],"win1":["de","Microsoft Windows 1.0"],"win2":["de","Microsoft Windows 2.x"],"win3":["de","Microsoft Windows 3.0"],"win31":["de","Microsoft Windows 3.1"],"wfw311":["de","Microsoft Windows 3.1"],"nt31":["de","Microsoft Windows NT 3.1"],"nt35":["de","Microsoft Windows NT 3.5"],"nt351":["de","Microsoft Windows NT 3.51"],"win95":["de","Microsoft Windows 95"],"win95r2":["de","Microsoft Windows 95"],"nt4":["de","Microsoft Windows NT 4.0"],"win98":["de","Microsoft Windows 98"],"win98se":["de","Microsoft Windows 98"],"win2000":["de","Microsoft Windows 2000"],"winme":["de","Microsoft Windows Millennium Edition"],"winxp":["de","Microsoft Windows XP"],"ws2003":["de","Microsoft Windows Server 2003"],"xpsp2":["de","Microsoft Windows XP"],"xpsp3":["de","Microsoft Windows XP"],"xp64":["de","Microsoft Windows XP"],"vista":["de","Microsoft Windows Vista"],"win7":["de","Microsoft Windows 7"]}};
+const WIKI_RX = {};
+function wikiHref(l,t){
+  return 'https://'+l+'.wikipedia.org/wiki/'+encodeURIComponent(t.replace(/ /g,'_')).replace(/%3A/g,':').replace(/%28/g,'(').replace(/%29/g,')').replace(/%2C/g,',').replace(/%21/g,'!');
+}
+function wikiFind(cat,text){
+  if(cat==='os') return WIKI.os[text]||null;
+  for(const r of WIKI[cat]){
+    const rx = WIKI_RX[r[0]] || (WIKI_RX[r[0]] = new RegExp(r[0]));
+    if(rx.test(text)) return r[1] || null;
+  }
+  return null;
+}
+function wikiLink(cat,text){
+  const m=wikiFind(cat,text);
+  if(!m) return '';
+  const t=m[1].replace(/"/g,'&quot;');
+  return `<a class="wp" href="${wikiHref(m[0],m[1])}" target="_blank" rel="noopener noreferrer" title="Wikipedia (${m[0]}): ${t}" aria-label="Wikipedia: ${t}">Wiki&nbsp;↗</a>`;
+}
+function wikiInject(html,cat,text){
+  const l=wikiLink(cat,text);
+  return l ? html.replace(/(<span class="name">[^<]*)(<\/span>)/, '$1'+l.replace(/\$/g,'$$$$')+'$2') : html;
+}
+
 function imgTag(k){
   const im = k && IMAGES[k];
   if(!im) return '';
@@ -1140,7 +1174,7 @@ function osHtml(year){
   const rec = OS_REC[String(year)] && OS_REC[String(year)][state.tier];
   if(!rec) return '<div class="empty-note">Keine Angabe.</div>';
   const os = OS_BY_ID[rec[0]];
-  return `<div class="single-val">${os.name}</div>`
+  return `<div class="single-val">${os.name}${wikiLink('os',rec[0])}</div>`
        + `<div class="os-sub">seit ${os.date}${os.u?' · Datum unsicher':''}</div>`
        + (rec[1] ? `<div class="opt-note">${rec[1]}</div>` : '')
        + `<div class="price-line">Einschätzung · im Gesamtpreis nicht enthalten</div>`;
@@ -1160,14 +1194,14 @@ function eraLabel(y){
   return 'MULTI-CORE-ÄRA';
 }
 
-function entryHtml(entry){
+function entryHtml(entry,cat){
   if(Array.isArray(entry)){
     return entry.map(([tag,name])=>{
       const pill = tag ? `<span class="tag-pill${tag==='neu'?' tag-neu':''}">${tag==='neu'?'NEU':'ETABLIERT'}</span>` : '';
-      return `<div>${pill}${name}</div>`;
+      return `<div>${pill}${name}${cat?wikiLink(cat,name):''}</div>`;
     }).join('');
   }
-  return `<div>${entry}</div>`;
+  return `<div>${entry}${cat?wikiLink(cat,entry):''}</div>`;
 }
 
 function plainText(entry){
@@ -1237,14 +1271,14 @@ function quarterData(y,q){
   const yearOnly=CATALOG.cpu.concat(CATALOG.gpu).filter(x=>x.y===y && datePrec(x.date)==='jahr').length;
   return Q_CACHE[key]={pick,nu,yearOnly};
 }
-function qNameCpu(x){return `${x.mfr} ${x.model}<span class="q-meta">${[x.core,x.socket,x.clock?x.clock+' MHz':''].filter(Boolean).join(', ')} · ${x.date}</span>`;}
-function qNameGpu(x){return `${x.mfr} ${x.model}<span class="q-meta">${[x.chip,x.bus].filter(Boolean).join(', ')} · ${x.date}</span>`;}
+function qNameCpu(x){return `${x.mfr} ${x.model}${wikiLink('cpu',x.mfr+' '+x.model)}<span class="q-meta">${[x.core,x.socket,x.clock?x.clock+' MHz':''].filter(Boolean).join(', ')} · ${x.date}</span>`;}
+function qNameGpu(x){return `${x.mfr} ${x.model}${wikiLink('gpu',x.mfr+' '+x.model+' '+(x.chip||''))}<span class="q-meta">${[x.chip,x.bus].filter(Boolean).join(', ')} · ${x.date}</span>`;}
 function qYearTag(html){return `<div><span class="tag-pill">JAHRESWERT</span>${html}</div>`;}
 function qCpuRows(d,tIdx){
   const qd=quarterData(state.year,state.q);
   return ['intel','amd'].map(v=>{
     const p=qd.pick['cpu_'+v+'_'+tIdx];
-    const inner = p ? `<div>${qNameCpu(p)}</div>` : qYearTag(entryHtml(d[v][tIdx]).replace(/^<div>|<\/div>$/g,''));
+    const inner = p ? `<div>${qNameCpu(p)}</div>` : qYearTag(entryHtml(d[v][tIdx],'cpu').replace(/^<div>|<\/div>$/g,''));
     return `<div class="spec-row"><span class="who">${v.toUpperCase()}</span><span class="val">${inner}</span></div>`;
   }).join('');
 }
@@ -1254,7 +1288,7 @@ function qGpuRows(d,tIdx){
     const p=qd.pick['gpu_'+brand+'_'+tIdx];
     const arr=d.gpu[brand], yv=arr?arr[tIdx]:null;
     if(p) rows.push(`<div class="gpu-opt"><span class="gpu-tag">${GPU_LABEL[brand]}</span><span class="gpu-val"><div>${qNameGpu(p)}</div></span></div>`);
-    else if(yv) rows.push(`<div class="gpu-opt"><span class="gpu-tag">${GPU_LABEL[brand]}</span><span class="gpu-val">${qYearTag(entryHtml(yv).replace(/^<div>|<\/div>$/g,''))}</span></div>`);
+    else if(yv) rows.push(`<div class="gpu-opt"><span class="gpu-tag">${GPU_LABEL[brand]}</span><span class="gpu-val">${qYearTag(entryHtml(yv,'gpu').replace(/^<div>|<\/div>$/g,''))}</span></div>`);
   });
   return rows.join('') || `<div class="empty-note">Für ${d.y} Q${state.q} liegt hier keine Angabe vor.</div>`;
 }
@@ -1266,8 +1300,8 @@ function qNewHtml(){
   if(!state.q) return '';
   const qd=quarterData(state.year,state.q);
   const list=(arr,nameFn,title)=>arr.length ? `<details open><summary>${title} (${arr.length})</summary>${arr.map(x=>`<div class="q-item"><span class="q-d">${x.date}</span><span class="q-n">${nameFn(x)}</span></div>`).join('')}</details>` : '';
-  const cpuName=x=>`${x.mfr} ${x.model}<span class="q-meta">${[x.core,x.socket,x.clock?x.clock+' MHz':''].filter(Boolean).join(', ')}</span>`;
-  const gpuName=x=>`${x.mfr} ${x.model}<span class="q-meta">${[x.chip,x.bus,x.klass].filter(Boolean).join(', ')}</span>`;
+  const cpuName=x=>`${x.mfr} ${x.model}${wikiLink('cpu',x.mfr+' '+x.model)}<span class="q-meta">${[x.core,x.socket,x.clock?x.clock+' MHz':''].filter(Boolean).join(', ')}</span>`;
+  const gpuName=x=>`${x.mfr} ${x.model}${wikiLink('gpu',x.mfr+' '+x.model+' '+(x.chip||''))}<span class="q-meta">${[x.chip,x.bus,x.klass].filter(Boolean).join(', ')}</span>`;
   const body=list(qd.nu.cpu,cpuName,'Neue Prozessoren')+list(qd.nu.gpu,gpuName,'Neue Grafikchips/-karten');
   const rest=qd.yearOnly ? `<div class="opt-note">${qd.yearOnly} weitere Einträge aus ${state.year} haben nur eine Jahresangabe und stehen im Hardware-Katalog, nicht in den Quartalen.</div>` : '';
   return `<div class="card q-new"><div class="cat">Neu in Q${state.q} ${state.year}</div>${body||'<div class="empty-note">Im Katalog ist für dieses Quartal nichts eingetragen.</div>'}${rest}${qNote()}</div>`;
@@ -1276,14 +1310,14 @@ function qNewHtml(){
 function cpuRowsHtml(d){
   const tIdx=TIERS.indexOf(state.tier);
   if(state.q) return qCpuRows(d,tIdx);
-  return `<div class="spec-row"><span class="who">INTEL</span><span class="val">${entryHtml(d.intel[tIdx])}</span></div>`
-       + `<div class="spec-row"><span class="who">AMD</span><span class="val">${entryHtml(d.amd[tIdx])}</span></div>`;
+  return `<div class="spec-row"><span class="who">INTEL</span><span class="val">${entryHtml(d.intel[tIdx],'cpu')}</span></div>`
+       + `<div class="spec-row"><span class="who">AMD</span><span class="val">${entryHtml(d.amd[tIdx],'cpu')}</span></div>`;
 }
 
 function boardRowsHtml(d){
   const tIdx=TIERS.indexOf(state.tier);
-  return `<div class="spec-row"><span class="who">INTEL</span><span class="val">${entryHtml(d.board.intel[tIdx])}</span></div>`
-       + `<div class="spec-row"><span class="who">AMD</span><span class="val">${entryHtml(d.board.amd[tIdx])}</span></div>`;
+  return `<div class="spec-row"><span class="who">INTEL</span><span class="val">${entryHtml(d.board.intel[tIdx],'board')}</span></div>`
+       + `<div class="spec-row"><span class="who">AMD</span><span class="val">${entryHtml(d.board.amd[tIdx],'board')}</span></div>`;
 }
 
 function soundHtml(d){
@@ -1291,8 +1325,8 @@ function soundHtml(d){
   const rows=[];
   const cVal=d.sound.creative[tIdx];
   const oVal=d.sound.other[tIdx];
-  if(cVal) rows.push(`<div class="spec-row"><span class="who">CREATIVE</span><span class="val">${entryHtml(cVal)}</span></div>`);
-  if(oVal) rows.push(`<div class="spec-row"><span class="who">ANDERE</span><span class="val">${entryHtml(oVal)}</span></div>`);
+  if(cVal) rows.push(`<div class="spec-row"><span class="who">CREATIVE</span><span class="val">${entryHtml(cVal,'sound')}</span></div>`);
+  if(oVal) rows.push(`<div class="spec-row"><span class="who">ANDERE</span><span class="val">${entryHtml(oVal,'sound')}</span></div>`);
   if(rows.length===0) rows.push('<div class="empty-note">Keine Angabe.</div>');
   if(d.wavetable) rows.push(`<div class="opt-note">${d.wavetable}</div>`);
   return rows.join('');
@@ -1305,7 +1339,7 @@ function gpuHtml(d){
   GPU_ORDER.forEach(brand=>{
     const arr=d.gpu[brand];
     const val = arr ? arr[tIdx] : null;
-    if(val) rows.push(`<div class="gpu-opt"><span class="gpu-tag">${GPU_LABEL[brand]}</span><span class="gpu-val">${entryHtml(val)}</span></div>`);
+    if(val) rows.push(`<div class="gpu-opt"><span class="gpu-tag">${GPU_LABEL[brand]}</span><span class="gpu-val">${entryHtml(val,'gpu')}</span></div>`);
   });
   if(rows.length===0){
     return `<div class="empty-note">Für ${d.y} liegt hier keine Angabe vor.</div>`;
@@ -1487,21 +1521,24 @@ function guessTierGPU(klass){
 }
 function catPriceYear(y){ return Math.max(1985, Math.min(2010, y)); }
 
-function catCpuRow(e){
+function catCpuRow(e){ return wikiInject(catCpuRow0(e),'cpu',e.mfr+' '+e.model); }
+function catCpuRow0(e){
   const meta=[e.core && ('Kern: '+e.core), e.socket && ('Sockel: '+e.socket), e.clock!=='' && (e.clock+' MHz'), e.cores!=='' && (e.cores+' Kern(e)')].filter(Boolean).join(' · ');
   const py=catPriceYear(e.y);
   const tier=guessTierCPU(e.model);
   const price=priceLine(PRICES_USD[py][tier].cpu, py);
   return `<div class="cat-row">${imgTag(e.img)}<div class="head"><span class="date">${e.date}</span><span class="name">${e.mfr} ${e.model}</span>${catKindPill(e.kind)}</div><div class="meta">${meta}</div>${e.note?`<div class="note">${e.note}</div>`:''}${price}</div>`;
 }
-function catGpuRow(e){
+function catGpuRow(e){ return wikiInject(catGpuRow0(e),'gpu',e.mfr+' '+e.model+' '+(e.chip||'')); }
+function catGpuRow0(e){
   const meta=[e.chip && ('Chip: '+e.chip), e.clock && (e.clock+' MHz Kerntakt'), e.bus, e.klass && ('Klasse damals: '+e.klass), e.feat].filter(Boolean).join(' · ');
   const py=catPriceYear(e.y);
   const tier=guessTierGPU(e.klass);
   const price=e.klass ? priceLine(PRICES_USD[py][tier].gpu, py) : '';
   return `<div class="cat-row">${imgTag(e.img)}<div class="head"><span class="date">${e.date}</span><span class="name">${e.mfr} ${e.model}</span>${catKindPill(e.kind)}</div><div class="meta">${meta}</div>${e.note?`<div class="note">${e.note}</div>`:''}${price}</div>`;
 }
-function catSndRow(e){
+function catSndRow(e){ return wikiInject(catSndRow0(e),'sound',e.mfr+' '+e.model+' '+(e.chip||'')); }
+function catSndRow0(e){
   const meta=[e.chip && ('Chip: '+e.chip), e.bus, e.midi, e.dos].filter(Boolean).join(' · ');
   return `<div class="cat-row">${imgTag(e.img)}<div class="head"><span class="date">${e.date}</span><span class="name">${e.mfr} ${e.model}</span>${catKindPill(e.kind)}</div><div class="meta">${meta}</div>${e.note?`<div class="note">${e.note}</div>`:''}</div>`;
 }
@@ -1619,13 +1656,14 @@ function renderGenerations(){
   document.getElementById('genGrid').innerHTML = order.map(key=>{
     const rows=source[key].filter(g=>g.y>=YEAR_MIN).map(g=>{
       const term=genSearchTerm(g.g).replace(/"/g,'&quot;');
-      return `<div class="gen-row" data-year="${g.y}" data-q="${isBoard?'':term}" title="Im Hardware-Katalog ${g.y} ansehen"><div class="y">${g.y}</div><div class="body"><div class="name">${g.g}</div><div class="note">${g.note}</div></div></div>`;
+      return `<div class="gen-row" data-year="${g.y}" data-q="${isBoard?'':term}" title="Im Hardware-Katalog ${g.y} ansehen"><div class="y">${g.y}</div><div class="body"><div class="name">${g.g}${wikiLink(genCat,GEN_LABELS[key]+' '+g.g)}</div><div class="note">${g.note}</div></div></div>`;
     }).join('');
     if(!rows) return '';
     return `<div class="gen-col"><h3>${GEN_LABELS[key]}</h3>${rows}</div>`;
   }).join('');
 }
 document.getElementById('genGrid').addEventListener('click', e=>{
+  if(e.target.closest('a.wp')) return;
   const row = e.target.closest('.gen-row');
   if(!row) return;
   goToCatalog(Number(row.dataset.year), row.dataset.q);
@@ -1714,7 +1752,8 @@ function osRecs(id){
   });
   return parts.join(' · ');
 }
-function osRow(o){
+function osRow(o){ return wikiInject(osRow0(o),'os',o.id); }
+function osRow0(o){
   const recs=osRecs(o.id);
   return `<div class="cat-row">${imgTag(o.img)}<div class="head"><span class="date">${o.date}</span><span class="name">${o.name}</span><span class="kind-pill">${o.line}</span>${o.u?'<span class="kind-pill">unsicher</span>':''}</div>`
     + (o.req?`<div class="meta">${o.req}</div>`:'')
