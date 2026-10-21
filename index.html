@@ -566,8 +566,10 @@ html[data-skin="xp"] .card .cat,html[data-skin="xp"] .gen-col h3{color:#0a3da8;}
 html[data-skin="xp"] .skin-box{color:#000;}
 html[data-skin="xp"] footer{color:#303030;}
 /* ---------- Abstände (alle Designs) ---------- */
-#viewReco > * + *,#viewCatalog > * + *,#viewGen > * + *,#viewWave > * + *,#viewShuttle > * + *,#viewOs > * + *{margin-top:20px;}
-#viewReco > footer,#viewCatalog > footer,#viewGen > footer,#viewWave > footer,#viewShuttle > footer,#viewOs > footer{margin-top:32px;}
+#viewReco > * + *,#viewCatalog > * + *,#viewGen > * + *,#viewShuttle > * + *,#viewOs > * + *{margin-top:20px;}
+#genWavePane > * + *{margin-top:16px;}
+#genWavePane > footer{margin-top:28px;}
+#viewReco > footer,#viewCatalog > footer,#viewGen > footer,#viewShuttle > footer,#viewOs > footer{margin-top:32px;}
 .q-hint{margin:10px 2px 0;}
 .sheet-grid{align-items:stretch;}
 @media (min-width:1000px){ .sheet-grid{grid-template-columns:repeat(4,1fr);} .sheet-grid > .card:nth-child(7){grid-column:span 2;} }
@@ -644,9 +646,8 @@ html[data-skin="dos"] footer#credits::after{content:"C:\\RETRO-PC-FINDER>_"; dis
     <button class="view-btn" data-view="reco" type="button" aria-pressed="true">Empfehlung nach Baujahr</button>
     <button class="view-btn" data-view="catalog" type="button" aria-pressed="false">Hardware-Katalog 1995–2010</button>
     <button class="view-btn" data-view="gen" type="button" aria-pressed="false">Hardware</button>
-    <button class="view-btn" data-view="wave" type="button" aria-pressed="false">Wavetable</button>
-    <button class="view-btn" data-view="shuttle" type="button" aria-pressed="false">Shuttle XPC</button>
     <button class="view-btn" data-view="os" type="button" aria-pressed="false">Betriebssysteme</button>
+    <button class="view-btn" data-view="shuttle" type="button" aria-pressed="false">Shuttle XPC</button>
   </nav>
 
   <div id="viewReco">
@@ -778,27 +779,17 @@ html[data-skin="dos"] footer#credits::after{content:"C:\\RETRO-PC-FINDER>_"; dis
   <div id="viewGen" hidden>
 
   <section aria-label="Chip-Generationen">
-    <h2 class="section-h">Hardware: Generationen im Überblick <span class="section-h-sub">(nur die Basis-Generationen, keine Modellabstufungen)</span></h2>
+    <h2 class="section-h" id="genTitle">Hardware: Generationen im Überblick <span class="section-h-sub">(nur die Basis-Generationen, keine Modellabstufungen)</span></h2>
     <div class="tier-row" id="genSwitch">
       <button class="tier-btn" data-gencat="cpu" type="button" aria-pressed="true"><span class="lbl">CPUs</span><span class="sub">Intel, AMD &amp; Cyrix</span></button>
       <button class="tier-btn" data-gencat="gpu" type="button" aria-pressed="false"><span class="lbl">GPUs</span><span class="sub">NVIDIA, ATI, 3dfx &amp; weitere</span></button>
       <button class="tier-btn" data-gencat="sound" type="button" aria-pressed="false"><span class="lbl">Soundkarten</span><span class="sub">Creative, Aztech &amp; weitere</span></button>
+      <button class="tier-btn" data-gencat="wave" type="button" aria-pressed="false"><span class="lbl">Wavetable</span><span class="sub">Nachrüst-Karten &amp; Module</span></button>
       <button class="tier-btn" data-gencat="board" type="button" aria-pressed="false"><span class="lbl">Board-Chipsätze</span><span class="sub">Intel- &amp; AMD-Plattform</span></button>
     </div>
     <div id="genNote" class="gen-note" hidden></div>
     <div class="gen-grid" id="genGrid"></div>
-  </section>
-
-  <footer>
-    Zeigt je Hersteller nur den Wechsel auf eine neue Generation (z. B. Riva 128 → TNT → GeForce → GeForce2 … bzw. 430FX → 430HX → 440BX → 815 …), nicht jede Modellvariante (MX/Ti/GTX usw. — die stehen im Hardware-Katalog). Jahr = erste Vorstellung/erster Marktstart laut Recherche-Tabelle bzw. eigener Einordnung bei den Chipsätzen.
-  </footer>
-
-  </div>
-
-  <div id="viewWave" hidden>
-
-  <section aria-label="Wavetable zum Nachrüsten">
-    <h2 class="section-h">Wavetable zum Nachrüsten <span class="section-h-sub">(Tochterkarten, moderne Nachbauten, Zubehör und externe Module)</span></h2>
+    <div id="genWavePane" hidden>
     <div class="tier-row" id="waveSwitch">
       <button class="tier-btn" data-wtgrp="tochter" type="button" aria-pressed="true"><span class="lbl">Tochterkarten</span><span class="sub">Vintage, Wave-Blaster-Header</span></button>
       <button class="tier-btn" data-wtgrp="modern" type="button" aria-pressed="false"><span class="lbl">Moderne Nachbauten</span><span class="sub">Dreamblaster, McFly &amp; Co.</span></button>
@@ -814,10 +805,15 @@ html[data-skin="dos"] footer#credits::after{content:"C:\\RETRO-PC-FINDER>_"; dis
       <p class="search-hint" id="waveCount"></p>
     </div>
     <div class="cat-list tall" id="waveList"></div>
+  
+<footer id="waveFooter">
+    Quellen: DOS Days („Wavetable Audio", Wavetable-Chipliste), amoretro.de („Soundkarten und Wavetable-Recordings"), Serdashop (aktuelle Preise, Stand Oktober 2026), Tindie (DWAVE), Wikipedia (Roland Sound Canvas, MT-32, Yamaha MU-Reihe). „k. A." heißt, dass zu dem Punkt nichts gefunden wurde. „Unsicher" markiert widersprüchliche oder nicht sicher belegte Jahre. Externe Module stehen getrennt von den Steckkarten, weil sie am MIDI-Anschluss laufen.
+  </footer>
+    </div>
   </section>
 
-  <footer>
-    Quellen: DOS Days („Wavetable Audio", Wavetable-Chipliste), amoretro.de („Soundkarten und Wavetable-Recordings"), Serdashop (aktuelle Preise, Stand Oktober 2026), Tindie (DWAVE), Wikipedia (Roland Sound Canvas, MT-32, Yamaha MU-Reihe). „k. A." heißt, dass zu dem Punkt nichts gefunden wurde. „Unsicher" markiert widersprüchliche oder nicht sicher belegte Jahre. Externe Module stehen getrennt von den Steckkarten, weil sie am MIDI-Anschluss laufen.
+  <footer id="genFooter">
+    Zeigt je Hersteller nur den Wechsel auf eine neue Generation (z. B. Riva 128 → TNT → GeForce → GeForce2 … bzw. 430FX → 430HX → 440BX → 815 …), nicht jede Modellvariante (MX/Ti/GTX usw. — die stehen im Hardware-Katalog). Jahr = erste Vorstellung/erster Marktstart laut Recherche-Tabelle bzw. eigener Einordnung bei den Chipsätzen.
   </footer>
 
   </div>
@@ -1439,11 +1435,11 @@ render();
 
 /* ================= view switch ================= */
 function switchView(v){
+  if(v==='wave'){ genCat='wave'; v='gen'; syncGenButtons(); renderGenerations(); }
   document.querySelectorAll('.view-btn').forEach(b=>b.setAttribute('aria-pressed', String(b.dataset.view===v)));
   document.getElementById('viewReco').hidden = v!=='reco';
   document.getElementById('viewCatalog').hidden = v!=='catalog';
   document.getElementById('viewGen').hidden = v!=='gen';
-  document.getElementById('viewWave').hidden = v!=='wave';
   document.getElementById('viewShuttle').hidden = v!=='shuttle';
   document.getElementById('viewOs').hidden = v!=='os';
 }
@@ -1596,7 +1592,23 @@ function genSearchTerm(name){
   return name.split(/[/(]/)[0].trim();
 }
 const SOUND_NOTE = `<strong>Soundkarten-Generationen</strong> (nach DOS Days): 1. FM-Synthese ohne Sample-Wiedergabe (z. B. Ad Lib, 1987) · 2. FM-Synthese mit einfacher Sample-Wiedergabe (Sound Blaster) · 3. Wavetable onboard oder per Header für eine Tochterkarte (viele 16-Bit-ISA-Karten) · 4. Wavetable-Tochterkarte als Zusatzmodul · 5. MIDI-Synthesizer, auf der Karte oder extern. Die Grundfähigkeiten einer Karte bestimmen drei Chips: FM-Synthesizer, Audio-Codec und DAC. Eine schlechte Analogstufe kann trotzdem rauschen.<br><button class="link-btn" id="gotoWaveBtn" type="button">→ Wavetable zum Nachrüsten</button>`;
+const GEN_TITLE_HTML = document.getElementById('genTitle').innerHTML;
+function syncGenButtons(){
+  document.querySelectorAll('#genSwitch .tier-btn').forEach(b=>b.setAttribute('aria-pressed', String(b.dataset.gencat===genCat)));
+}
 function renderGenerations(){
+  const isWave = genCat==='wave';
+  document.getElementById('genWavePane').hidden = !isWave;
+  document.getElementById('genGrid').hidden = isWave;
+  document.getElementById('genFooter').hidden = isWave;
+  document.getElementById('genTitle').innerHTML = isWave
+    ? 'Hardware: Wavetable zum Nachrüsten <span class="section-h-sub">(Tochterkarten, moderne Nachbauten, Zubehör und externe Module)</span>'
+    : GEN_TITLE_HTML;
+  if(isWave){
+    document.getElementById('genNote').hidden = true;
+    renderWave();
+    return;
+  }
   const {source, order} = GEN_CATS[genCat];
   const gn=document.getElementById('genNote');
   gn.hidden = genCat!=='sound';
