@@ -569,7 +569,7 @@ html[data-skin="xp"] footer{color:#303030;}
 </style>
 
 <div class="wrap">
-  <div class="skin-box" id="skinBox"><label for="skinSel">Design</label><select id="skinSel" aria-label="Design wählen"></select><button id="skinBtn" type="button" title="Nächstes Design" aria-label="Nächstes Design">▶</button></div>
+  <div class="skin-box" id="skinBox"><label for="skinSel">Design</label><select id="skinSel" aria-label="Design wählen"></select><button id="skinBtn" type="button" title="Nächstes Design" aria-label="Nächstes Design">▶</button><button id="soundBtn" type="button" aria-pressed="true" title="Klang beim Designwechsel an/aus" aria-label="Klang beim Designwechsel">♪ an</button></div>
   <header class="top">
     <div class="eyebrow">Retro-PC-Finder · 1995–2010</div>
     <h1>Welche Hardware passt zu welchem Baujahr?</h1>
@@ -1659,6 +1659,44 @@ document.querySelectorAll('#osSwitch .tier-btn').forEach(btn=>{
 });
 renderOs();
 
+/* ================= klänge beim designwechsel ================= */
+// Eigene, per Web Audio erzeugte Kurzklänge im Stil der Zeit. Keine Audiodateien, keine Aufnahmen von Microsoft.
+const rpfSound=(function(){
+  let AC=null, on=true;
+  try{ on = localStorage.getItem('rpf-sound')!=='off'; }catch(e){}
+  function ctx(){
+    if(!AC){ const C=window.AudioContext||window.webkitAudioContext; if(!C) return null; AC=new C(); }
+    if(AC.state==='suspended') AC.resume();
+    return AC;
+  }
+  function tone(f,t,d,type,vol){
+    const o=AC.createOscillator(), g=AC.createGain();
+    o.type=type; o.frequency.value=f;
+    g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(vol,t+0.03); g.gain.exponentialRampToValueAtTime(0.0001,t+d);
+    o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t+d+0.05);
+  }
+  function chord(fs,gap,d,type,vol){
+    const t=AC.currentTime+0.02;
+    fs.forEach((f,i)=>{ tone(f,t+i*gap,d,type,vol); tone(f*2.002,t+i*gap,d*0.7,'sine',vol*0.35); });
+  }
+  const SOUNDS={
+    klassisch:()=>{ const t=AC.currentTime+0.02; tone(880,t,0.3,'sine',0.14); tone(1318.5,t+0.12,0.45,'sine',0.1); },
+    blau:()=>{ const t=AC.currentTime+0.02; tone(783.99,t,0.3,'sine',0.14); tone(1174.7,t+0.12,0.45,'sine',0.1); },
+    bios:()=>{ tone(1000,AC.currentTime+0.02,0.22,'square',0.07); },
+    dos:()=>{ const t=AC.currentTime+0.02; tone(880,t,0.12,'square',0.06); tone(880,t+0.2,0.12,'square',0.06); },
+    win311:()=>chord([523.25,659.25,783.99,1046.5],0.11,0.9,'triangle',0.12),
+    win98:()=>chord([293.66,369.99,440,554.37,659.25],0.26,2.6,'sine',0.11),
+    winme:()=>chord([261.63,329.63,392,493.88,587.33,1174.7],0.2,2.4,'sine',0.09),
+    win2000:()=>chord([196,246.94,293.66,392,493.88],0.32,3.1,'triangle',0.1),
+    xp:()=>chord([329.63,415.3,493.88,659.25,987.77],0.22,2.8,'sine',0.1)
+  };
+  return {
+    play(id){ if(!on) return; try{ if(ctx() && SOUNDS[id]) SOUNDS[id](); }catch(e){} },
+    isOn(){ return on; },
+    toggle(){ on=!on; try{ localStorage.setItem('rpf-sound', on?'on':'off'); }catch(e){} return on; }
+  };
+})();
+
 /* ================= design-auswahl ================= */
 (function(){
   const SK=[['klassisch','Klassisch Orange'],['blau','Klassisch SteelBlue'],['bios','BIOS 1999'],['dos','DOS 6.22'],['win311','Windows 3.11'],['win98','Windows 98'],['winme','Windows ME'],['win2000','Windows 2000'],['xp','Windows XP']];
@@ -1675,7 +1713,12 @@ renderOs();
     cur=v;
     try{ localStorage.setItem('rpf-skin',cur); }catch(e){}
     apply();
+    rpfSound.play(cur);
   }
+  const sbtn=document.getElementById('soundBtn');
+  function showSound(){ sbtn.setAttribute('aria-pressed',String(rpfSound.isOn())); sbtn.textContent=rpfSound.isOn()?'♪ an':'♪ aus'; }
+  sbtn.addEventListener('click',()=>{ rpfSound.toggle(); showSound(); rpfSound.play(cur); });
+  showSound();
   sel.addEventListener('change',()=>set(sel.value));
   btn.addEventListener('click',()=>{ const i=SK.findIndex(x=>x[0]===cur); set(SK[(i+1)%SK.length][0]); });
   apply();
