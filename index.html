@@ -565,9 +565,73 @@ html[data-skin="xp"] thead th{background:linear-gradient(to bottom,#ffffff,#ece9
 html[data-skin="xp"] .card .cat,html[data-skin="xp"] .gen-col h3{color:#0a3da8;}
 html[data-skin="xp"] .skin-box{color:#000;}
 html[data-skin="xp"] footer{color:#303030;}
+/* ---------- Abstände (alle Designs) ---------- */
+#viewReco > * + *,#viewCatalog > * + *,#viewGen > * + *,#viewWave > * + *,#viewShuttle > * + *,#viewOs > * + *{margin-top:20px;}
+#viewReco > footer,#viewCatalog > footer,#viewGen > footer,#viewWave > footer,#viewShuttle > footer,#viewOs > footer{margin-top:32px;}
+.q-hint{margin:10px 2px 0;}
+.sheet-grid{align-items:stretch;}
+@media (min-width:1000px){ .sheet-grid{grid-template-columns:repeat(4,1fr);} .sheet-grid > .card:nth-child(7){grid-column:span 2;} }
+@media (min-width:641px) and (max-width:999px){ .sheet-grid{grid-template-columns:repeat(2,1fr);} .sheet-grid > .card:nth-child(7){grid-column:span 2;} }
+
+/* ---------- Taskleiste (Windows 98, ME, 2000, XP) ---------- */
+.taskbar{display:none;}
+html[data-skin="win98"] .taskbar,html[data-skin="winme"] .taskbar,html[data-skin="win2000"] .taskbar,html[data-skin="xp"] .taskbar{display:flex; position:fixed; left:0; right:0; bottom:0; z-index:60; align-items:center; gap:6px; padding:3px 4px; height:32px; box-sizing:border-box; font-size:12px; line-height:1; user-select:none;}
+html[data-skin="win98"] body,html[data-skin="winme"] body,html[data-skin="win2000"] body,html[data-skin="xp"] body{padding-bottom:44px;}
+.taskbar .tb-start,.taskbar .tb-task,.taskbar .tb-clock{display:inline-flex; align-items:center; height:100%; box-sizing:border-box; white-space:nowrap;}
+.taskbar .tb-task{max-width:170px; overflow:hidden; text-overflow:ellipsis;}
+.taskbar .tb-clock{margin-left:auto;}
+html[data-skin="win98"] .taskbar,html[data-skin="winme"] .taskbar{background:#c0c0c0; border-top:2px solid #ffffff; box-shadow:inset 0 1px #dfdfdf;}
+html[data-skin="win2000"] .taskbar{background:#d4d0c8; border-top:2px solid #ffffff; box-shadow:inset 0 1px #e4e1da;}
+html[data-skin="win98"] .tb-start,html[data-skin="winme"] .tb-start,html[data-skin="win2000"] .tb-start{padding:0 10px; font-weight:bold; font-size:13px; color:#000; background:inherit; border:2px solid; border-color:#ffffff #404040 #404040 #ffffff; box-shadow:inset -1px -1px #808080;}
+html[data-skin="win98"] .tb-task,html[data-skin="winme"] .tb-task,html[data-skin="win2000"] .tb-task{padding:0 8px; font-weight:bold; color:#000; background:repeating-conic-gradient(#ffffff 0% 25%, #c0c0c0 0% 50%) 0 0/2px 2px; border:2px solid; border-color:#404040 #ffffff #ffffff #404040;}
+html[data-skin="win98"] .tb-clock,html[data-skin="winme"] .tb-clock,html[data-skin="win2000"] .tb-clock{padding:0 10px; color:#000; border:1px solid; border-color:#808080 #ffffff #ffffff #808080;}
+html[data-skin="xp"] .taskbar{height:36px; padding:0; gap:8px; background:linear-gradient(to bottom,#2a6ae0 0%,#4a95f5 8%,#2563d9 18%,#245edb 86%,#1941a5 100%); border-top:1px solid #0c3fb0;}
+html[data-skin="xp"] body{padding-bottom:48px;}
+html[data-skin="xp"] .tb-start{padding:0 22px 0 12px; font:italic bold 18px/1 'Noto Sans',Verdana,sans-serif; color:#fff; text-shadow:1px 1px 2px #1a4d10; border-radius:0 12px 12px 0; background:linear-gradient(to bottom,#5bbd54 0%,#3c9f35 12%,#359a2e 85%,#2a7f25 100%); box-shadow:2px 0 4px rgba(0,0,0,0.4);}
+html[data-skin="xp"] .tb-task{padding:0 12px; color:#fff; font-weight:bold; border-radius:3px; background:linear-gradient(to bottom,#1c4fb5,#2f6fdc); box-shadow:inset 1px 1px 3px rgba(0,0,0,0.45);}
+html[data-skin="xp"] .tb-clock{padding:0 14px; color:#fff; background:linear-gradient(to bottom,#0f9ae8,#1486e0 20%,#0f78d4); border-left:1px solid #0b4bb0; box-shadow:inset 1px 0 2px #6cc4f5;}
+@media (max-width:640px){ .taskbar .tb-task{display:none;} }
+
+/* ---------- Menüleiste unter der Titelzeile (Fenster-Designs) ---------- */
+html[data-skin="win311"] .wrap,html[data-skin="win98"] .wrap,html[data-skin="winme"] .wrap,html[data-skin="win2000"] .wrap{padding-top:74px;}
+html[data-skin="xp"] .wrap{padding-top:80px;}
+html[data-skin="win311"] header.top::before,html[data-skin="win98"] header.top::before,html[data-skin="winme"] header.top::before,html[data-skin="win2000"] header.top::before,html[data-skin="xp"] header.top::before{position:absolute; left:4px; right:4px; height:20px; line-height:20px; padding:0 8px; font-size:12px; white-space:pre; overflow:hidden; color:#000; z-index:1;}
+html[data-skin="win311"] header.top::before{content:"Datei   Optionen   Fenster   Hilfe"; top:26px; left:5px; right:5px; background:#fff; border-bottom:1px solid #000;}
+html[data-skin="win98"] header.top::before,html[data-skin="winme"] header.top::before{content:"Datei   Bearbeiten   Ansicht   Wechseln zu   Favoriten   ?"; top:27px; background:#c0c0c0; border-bottom:1px solid #808080;}
+html[data-skin="win2000"] header.top::before{content:"Datei   Bearbeiten   Ansicht   Favoriten   Extras   ?"; top:27px; background:#d4d0c8; border-bottom:1px solid #808080;}
+html[data-skin="xp"] header.top::before{content:"Datei   Bearbeiten   Ansicht   Favoriten   Extras   ?"; top:36px; left:3px; right:3px; background:#ece9d8; border-bottom:1px solid #d0cbb8;}
+html[data-skin="win311"] .skin-box,html[data-skin="win98"] .skin-box,html[data-skin="winme"] .skin-box,html[data-skin="win2000"] .skin-box{top:56px;}
+html[data-skin="xp"] .skin-box{top:64px;}
+@media (max-width:640px){ html[data-skin="win311"] .skin-box,html[data-skin="win98"] .skin-box,html[data-skin="winme"] .skin-box,html[data-skin="win2000"] .skin-box,html[data-skin="xp"] .skin-box{top:auto;} html[data-skin="win311"] header.top::before,html[data-skin="win98"] header.top::before,html[data-skin="winme"] header.top::before,html[data-skin="win2000"] header.top::before,html[data-skin="xp"] header.top::before{padding:0 4px;} }
+
+/* ---------- BIOS 1999 im Stil des Award-Setups ---------- */
+:root[data-skin="bios"]{--bg:#0000aa; --surface:#0000aa; --surface-2:#0000aa; --ink:#ffff55; --ink-soft:#ffffff; --ink-faint:#aaaaaa; --line:#aaaaaa; --accent:#ffff55; --accent-ink:#0000aa; --good:#55ff55; --screen-bg:#0000aa; --screen-glow:#ffff55; --screen-glow-dim:#aaaaaa; --glow-rgb:255,255,85;}
+html[data-skin="bios"] body{font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:14px; padding-bottom:52px;}
+html[data-skin="bios"] header.top::before{content:"CMOS Setup Utility - Copyright (C) 1984-1999 Award Software"; text-align:center; color:#ffffff; font-weight:600; border-bottom:2px solid #aaaaaa;}
+html[data-skin="bios"] .card,html[data-skin="bios"] .cat-list,html[data-skin="bios"] .timeline-wrap,html[data-skin="bios"] .gen-col,html[data-skin="bios"] .gen-note,html[data-skin="bios"] .tier-btn,html[data-skin="bios"] .view-btn,html[data-skin="bios"] .search-input,html[data-skin="bios"] .bios-summary,html[data-skin="bios"] .skin-box select,html[data-skin="bios"] .skin-box button,html[data-skin="bios"] .year-step,html[data-skin="bios"] .link-btn{border:2px solid #aaaaaa;}
+html[data-skin="bios"] .bios{border:3px double #aaaaaa;}
+html[data-skin="bios"] .view-btn[aria-pressed="true"],html[data-skin="bios"] .tier-btn[aria-pressed="true"]{background:#aa0000; color:#ffff55; border-color:#aa0000;}
+html[data-skin="bios"] .tier-btn[aria-pressed="true"] .lbl,html[data-skin="bios"] .tier-btn[aria-pressed="true"] .sub{color:#ffff55;}
+html[data-skin="bios"] .card .cat,html[data-skin="bios"] .gen-col h3{color:#ffffff;}
+html[data-skin="bios"] thead th{background:#0000aa; color:#ffffff; border-bottom:2px solid #aaaaaa;}
+html[data-skin="bios"] tbody tr:hover{background:#aa0000;}
+html[data-skin="bios"] .cat-row,html[data-skin="bios"] tbody td{border-bottom:1px solid #5555cc;}
+html[data-skin="bios"] .skin-box select option{background:#0000aa; color:#ffff55;}
+html[data-skin="bios"] .taskbar{display:flex; position:fixed; left:0; right:0; bottom:0; z-index:60; gap:28px; align-items:center; justify-content:center; height:34px; background:#0000aa; border-top:2px solid #aaaaaa; color:#ffffff; font-size:13px; white-space:nowrap; overflow:hidden;}
+html[data-skin="bios"] .tb-start::after{content:"Esc : Beenden"; }
+html[data-skin="bios"] .tb-task::after{content:"↑↓→← : Auswahl";}
+html[data-skin="bios"] .tb-clock::after{content:"F10 : Speichern & Beenden";}
+html[data-skin="bios"] .tb-start,html[data-skin="bios"] .tb-task,html[data-skin="bios"] .tb-clock{font-size:0;}
+html[data-skin="bios"] .tb-start::after,html[data-skin="bios"] .tb-task::after,html[data-skin="bios"] .tb-clock::after{font-size:13px;}
+html[data-skin="bios"] .tb-clock{margin-left:0;}
+@media (max-width:640px){ html[data-skin="bios"] .taskbar{gap:10px; font-size:11px;} html[data-skin="bios"] .tb-start::after,html[data-skin="bios"] .tb-task::after,html[data-skin="bios"] .tb-clock::after{font-size:11px;} }
+
+/* ---------- DOS 6.22: Eingabeaufforderung mit Cursor ---------- */
+html[data-skin="dos"] footer#credits::after{content:"C:\\RETRO-PC-FINDER>_"; display:block; margin-top:14px; color:#aaaaaa; font-family:'VT323',monospace; font-size:18px;}
 @media (prefers-reduced-motion: reduce){ *{transition:none !important; animation:none !important;} }
 </style>
 
+<div class="taskbar" id="taskbar" aria-hidden="true"><span class="tb-start">Start</span><span class="tb-task">Retro-PC-Finder</span><span class="tb-clock" id="tbClock">12:00</span></div>
 <div class="wrap">
   <div class="skin-box" id="skinBox"><label for="skinSel">Design</label><select id="skinSel" aria-label="Design wählen"></select><button id="skinBtn" type="button" title="Nächstes Design" aria-label="Nächstes Design">▶</button></div>
   <header class="top">
@@ -1676,6 +1740,8 @@ renderOs();
     try{ localStorage.setItem('rpf-skin',cur); }catch(e){}
     apply();
   }
+  function tick(){ const c=document.getElementById('tbClock'); if(c) c.textContent=new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}); }
+  tick(); setInterval(tick,20000);
   sel.addEventListener('change',()=>set(sel.value));
   btn.addEventListener('click',()=>{ const i=SK.findIndex(x=>x[0]===cur); set(SK[(i+1)%SK.length][0]); });
   apply();
