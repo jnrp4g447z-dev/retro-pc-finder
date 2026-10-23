@@ -680,6 +680,32 @@ html[data-skin="dos"] footer#credits::after{content:"C:\\>_"; display:block; mar
 .top5-box[hidden]{display:none;}
 .top5-h{font-size:16px; font-weight:600; margin:0 0 8px;}
 .top5-note{margin-top:8px; color:var(--ink-soft);}
+
+/* ---------- BIOS 1999 nach Vorlage: Phoenix - AwardBIOS CMOS Setup Utility ---------- */
+:root[data-skin="bios"]{--bg:#000080; --surface:#000080; --surface-2:#000080; --ink:#ffffff; --ink-soft:#ffff99; --ink-faint:#c8c8ff; --line:#ffffff; --accent:#ffff99; --accent-ink:#000080; --screen-bg:#000080; --screen-glow:#ffff99; --screen-glow-dim:#ffffff; --glow-rgb:255,255,153;}
+html[data-skin="bios"] body{padding-bottom:78px;}
+html[data-skin="bios"] header.top::before{content:"Phoenix - AwardBIOS CMOS Setup Utility"; white-space:normal; text-align:center; color:#ffffff; border-bottom:1px solid #ffffff; padding-bottom:6px;}
+html[data-skin="bios"] .card,html[data-skin="bios"] .cat-list,html[data-skin="bios"] .timeline-wrap,html[data-skin="bios"] .gen-col,html[data-skin="bios"] .gen-note,html[data-skin="bios"] .search-input,html[data-skin="bios"] .bios-summary,html[data-skin="bios"] .skin-box select,html[data-skin="bios"] .skin-box button{border:1px solid #ffffff; background:#000080; color:#ffff99;}
+html[data-skin="bios"] .bios{border:1px solid #ffffff; background:#000080;}
+html[data-skin="bios"] .tier-btn,html[data-skin="bios"] .view-btn{background:transparent; border:0; color:#ffff99; text-align:left;}
+html[data-skin="bios"] .tier-btn .lbl,html[data-skin="bios"] .tier-btn .sub{color:#ffff99;}
+html[data-skin="bios"] .tier-btn .lbl::before,html[data-skin="bios"] .view-btn::before{content:"> ";}
+html[data-skin="bios"] .tier-btn[aria-pressed="true"],html[data-skin="bios"] .view-btn[aria-pressed="true"]{background:#990000; color:#ffff99; border:0;}
+html[data-skin="bios"] .tier-btn[aria-pressed="true"] .lbl,html[data-skin="bios"] .tier-btn[aria-pressed="true"] .sub{color:#ffff99;}
+html[data-skin="bios"] .spec-row .val,html[data-skin="bios"] .single-val,html[data-skin="bios"] .gpu-val,html[data-skin="bios"] .year-digits,html[data-skin="bios"] .cat-row .name{color:#ffff99;}
+html[data-skin="bios"] .card .cat,html[data-skin="bios"] .gen-col h3,html[data-skin="bios"] h1,html[data-skin="bios"] h2{color:#ffffff;}
+html[data-skin="bios"] thead th{background:#000080; color:#ffffff; border-bottom:1px solid #ffffff;}
+html[data-skin="bios"] tbody tr:hover{background:#990000;}
+html[data-skin="bios"] .cat-row,html[data-skin="bios"] tbody td{border-bottom:1px solid #3a3aa8;}
+html[data-skin="bios"] .skin-box select option{background:#000080; color:#ffff99;}
+html[data-skin="bios"] .taskbar{flex-wrap:wrap; justify-content:flex-start; align-content:flex-start; height:auto; min-height:62px; padding:4px 14px 6px; row-gap:2px; background:#000080; border-top:1px solid #ffffff; color:#ffffff; font-size:18px;}
+html[data-skin="bios"] .tb-start,html[data-skin="bios"] .tb-task,html[data-skin="bios"] .tb-clock{flex-basis:100%; font-size:0; height:auto;}
+html[data-skin="bios"] .tb-task{max-width:none; overflow:visible; text-overflow:clip;}
+html[data-skin="bios"] .tb-start::after{content:"Esc : Quit"; font-size:18px;}
+html[data-skin="bios"] .tb-task::after{content:"F10 : Save & Exit Setup"; font-size:18px;}
+html[data-skin="bios"] .tb-clock::after{content:"Virus Protection, Boot Sequence..."; font-size:18px; display:block; text-align:center; border-top:1px solid #ffffff; margin-top:4px; padding-top:4px; width:100%;}
+html[data-skin="bios"] .tb-clock{margin-left:0; justify-content:center;}
+@media (max-width:640px){ html[data-skin="bios"] .taskbar{font-size:13px; padding:3px 8px 4px;} html[data-skin="bios"] .tb-start::after,html[data-skin="bios"] .tb-task::after,html[data-skin="bios"] .tb-clock::after{font-size:13px;} }
 </style>
 
 <div class="taskbar" id="taskbar" aria-hidden="true"><span class="tb-start">Start</span><span class="tb-task">Retro-PC-Finder</span><span class="tb-clock" id="tbClock">12:00</span></div>
@@ -980,7 +1006,7 @@ html[data-skin="dos"] footer#credits::after{content:"C:\\>_"; display:block; mar
   <footer id="credits">
     <p class="credit-note"><strong>Zu den Designs:</strong> Die Windows- und DOS-Designs sind Nachbauten im Stil der jeweiligen Oberfläche, mit eigenen Zeichnungen und Farbwerten; sie enthalten keine Dateien von Microsoft. Alle Schriften sind eingebettet (IBM Plex, VT323, Noto Sans, Pixelify Sans; SIL Open Font License), es wird nichts nachgeladen.</p>
     <p class="credit-note"><strong>Zu den Wikipedia-Links:</strong> „Wiki ↗“ führt zum Wikipedia-Artikel der Baureihe bzw. des Herstellers (deutsch, sonst englisch), nicht zu einzelnen Modellen. Die Links wurden geprüft; ohne passenden Artikel gibt es keinen Link. Beim Laden der Seite wird nichts von Wikipedia abgerufen, erst beim Klick.</p>
-    <p class="credit-note"><strong>Zur VGA-Schrift:</strong> Für DOS 6.22 und BIOS 1999 ist die Schrift „Web Plus IBM VGA 8x16“ aus dem „Ultimate Oldschool PC Font Pack“ von VileR (int10h.org) eingebettet, Lizenz CC BY-SA 4.0.</p>
+    <p class="credit-note"><strong>Zur VGA-Schrift:</strong> Für BIOS 1999 ist die Schrift „Web Plus IBM VGA 8x16“ aus dem „Ultimate Oldschool PC Font Pack“ von VileR (int10h.org) eingebettet, Lizenz CC BY-SA 4.0.</p>
     <details><summary>Bildnachweis</summary><div id="creditList" class="credit-list"></div></details>
   </footer>
 
@@ -1990,7 +2016,7 @@ renderGames();
 
 /* ================= design-auswahl ================= */
 (function(){
-  const SK=[['klassisch','Klassisch Orange'],['blau','Klassisch SteelBlue'],['bios','BIOS 1999'],['dos','DOS 6.22'],['win311','Windows 3.11'],['win95','Windows 95'],['winme','Windows ME'],['win2000','Windows 2000'],['xp','Windows XP']];
+  const SK=[['klassisch','Klassisch Orange'],['bios','BIOS 1999'],['win95','Windows 95'],['winme','Windows ME'],['xp','Windows XP']];
   let cur='klassisch';
   try{ const s=localStorage.getItem('rpf-skin'); if(SK.some(x=>x[0]===s)) cur=s; }catch(e){}
   const sel=document.getElementById('skinSel'), btn=document.getElementById('skinBtn');

@@ -5,7 +5,7 @@ Eine kleine Webseite für alle, die sich einen Retro-PC bauen wollen: Baujahr un
 - Eine einzige Datei: `index.html` (kein Build, keine Abhängigkeiten, keine externen Anfragen: die Schriften IBM Plex und VT323 sind eingebettet, Lizenz SIL Open Font License)
 - Termine sind grobe Richtwerte aus eigener Recherche, keine Gewähr.
 - Die Seite zeigt die Jahre 1990 bis 2010 (`YEAR_MIN` im Skript).
-- Rechts oben lässt sich das Design wechseln: Klassisch Orange, Klassisch Stahlblau, BIOS 1999, DOS 6.22, Windows 3.11, 95, ME, 2000 und XP.
+- Rechts oben lässt sich das Design wechseln: Klassisch Orange, BIOS 1999 (nach Phoenix AwardBIOS), Windows 95, ME und XP.
 - Fotos und Logos stammen von Wikimedia Commons (freie Lizenzen), der Bildnachweis steht am Ende der Seite.
 
 Privates Hobbyprojekt, nicht kommerziell.
