@@ -707,20 +707,16 @@ html[data-skin="bios"] .tb-clock::after{content:"Virus Protection, Boot Sequence
 html[data-skin="bios"] .tb-clock{margin-left:0; justify-content:center;}
 @media (max-width:640px){ html[data-skin="bios"] .taskbar{font-size:13px; padding:3px 8px 4px;} html[data-skin="bios"] .tb-start::after,html[data-skin="bios"] .tb-task::after,html[data-skin="bios"] .tb-clock::after{font-size:13px;} }
 
-/* ---------- Jahresauswahl als Leiste ---------- */
-.bios{padding:10px 14px 12px;}
-.bios-top{font-size:11px; margin-bottom:6px;}
-.bios .year-readout,.bios .year-slider-row{display:none;}
-.yr-bar{display:flex; gap:6px; align-items:center; position:relative;}
-.yr-bar > .year-step{width:32px; height:32px; font-size:15px; flex:0 0 auto;}
-.yr-strip{display:flex; gap:4px; overflow-x:auto; scroll-snap-type:x proximity; padding:2px 1px; scrollbar-width:none; flex:1; min-width:0; position:relative;}
-.yr-strip::-webkit-scrollbar{display:none;}
-.yr-chip{height:auto; width:auto; min-width:0; padding:6px 5px; font-size:12px; border-radius:4px; flex:0 0 auto; text-align:center; scroll-snap-align:center;}
-.yr-chip[aria-pressed="true"]{background:var(--screen-glow) !important; color:var(--screen-bg) !important; border-color:var(--screen-glow) !important; font-weight:700;}
-.bios .bios-summary{margin-top:4px; padding:6px 2px 0; background:transparent !important; border:0 !important; font-size:13px; line-height:1.4;}
-html[data-skin="bios"] .yr-chip,html[data-skin="bios"] .yr-bar > .year-step{border:2px solid #000000; color:#ffff99;}
-html[data-skin="bios"] .yr-chip[aria-pressed="true"]{background:#990000 !important; color:#ffff99 !important; border-color:#000000 !important;}
-@media (max-width:640px){ .yr-chip{padding:7px 8px;} }
+/* ---------- Jahresauswahl kompakt ---------- */
+.bios{display:grid; grid-template-columns:auto 1fr; grid-template-areas:"top top" "read slider" "sum sum"; column-gap:14px; padding:10px 14px 12px;}
+.bios-top{grid-area:top; font-size:11px; margin-bottom:2px;}
+.bios .year-readout{grid-area:read; margin:0; gap:6px;}
+.bios .year-step{width:32px; height:32px; font-size:15px;}
+.bios .year-digits{font-size:44px; min-width:4ch;}
+.bios .year-slider-row{grid-area:slider; align-self:center; min-width:0;}
+.bios .year-ticks{font-size:10px;}
+.bios .bios-summary{grid-area:sum; margin-top:6px; padding:6px 2px 0; background:transparent !important; border:0 !important; font-size:13px; line-height:1.4;}
+@media (max-width:640px){ .bios{grid-template-columns:1fr; grid-template-areas:"top" "read" "slider" "sum";} .bios .year-readout{justify-content:flex-start;} }
 </style>
 
 <div class="taskbar" id="taskbar" aria-hidden="true"><span class="tb-start">Start</span><span class="tb-task">Retro-PC-Finder</span><span class="tb-clock" id="tbClock">12:00</span></div>
@@ -837,7 +833,7 @@ html[data-skin="bios"] .yr-chip[aria-pressed="true"]{background:#990000 !importa
       <input type="text" id="catSearch" class="search-input" placeholder="Modell suchen, z. B. „9800 Pro", „Athlon 64", „Voodoo2" …" autocomplete="off">
       <button class="year-step mono" id="catSearchClear" type="button" aria-label="Suche löschen" title="Suche löschen">✕</button>
     </div>
-    <p class="search-hint" id="catSearchHint">Ohne Suchbegriff: Liste des oben gewählten Jahres. Mit Suchbegriff: Treffer über alle Jahre 1990–2010, unabhängig von der Jahresauswahl.</p>
+    <p class="search-hint" id="catSearchHint">Ohne Suchbegriff: Liste des oben gewählten Jahres. Mit Suchbegriff: Treffer über alle Jahre 1990–2010, unabhängig vom Jahres-Regler.</p>
     <button class="link-btn" id="gotoRecoBtn" type="button">→ Empfehlung für dieses Jahr ansehen</button>
   </section>
 
@@ -2081,43 +2077,6 @@ const TOP5 = {"1990":["The Secret of Monkey Island","Wing Commander","Railroad T
   render = function(){ render0(); draw(); };
   btn.addEventListener('click', ()=>{ on=!on; try{ localStorage.setItem('rpf-top5', on?'1':'0'); }catch(e){} draw(); });
   render();
-})();
-
-/* ================= jahresauswahl als leiste ================= */
-(function(){
-  const bars = [];
-  document.querySelectorAll('.bios').forEach(box=>{
-    const sl = box.querySelector('input[type=range]'); if(!sl) return;
-    const steps = box.querySelectorAll('.year-step'), prev = steps[0], next = steps[1];
-    const min = +sl.min, max = +sl.max;
-    const bar = document.createElement('div'); bar.className = 'yr-bar'; bar.setAttribute('role','group'); bar.setAttribute('aria-label','Baujahr wählen');
-    const arrow = (t,label,src)=>{ const b=document.createElement('button'); b.type='button'; b.className='year-step mono'; b.textContent=t; b.setAttribute('aria-label',label); b.addEventListener('click',()=>src.click()); return b; };
-    const pb = arrow('◀','Ein Jahr zurück',prev), nb = arrow('▶','Ein Jahr vor',next);
-    const strip = document.createElement('div'); strip.className = 'yr-strip';
-    const chips = [];
-    for(let y=min; y<=max; y++){
-      const c = document.createElement('button'); c.type='button'; c.className='year-step yr-chip mono'; c.textContent=y;
-      c.addEventListener('click',()=>{ sl.value=y; sl.dispatchEvent(new Event('input',{bubbles:true})); });
-      strip.appendChild(c); chips.push(c);
-    }
-    bar.append(pb, strip, nb);
-    box.insertBefore(bar, box.querySelector('.year-readout'));
-    bars.push({sl, prev, next, pb, nb, strip, chips, min});
-  });
-  function sync(){
-    bars.forEach(o=>{
-      const y = +o.sl.value;
-      o.chips.forEach((c,i)=>c.setAttribute('aria-pressed', String(o.min+i===y)));
-      o.pb.disabled = o.prev.disabled; o.nb.disabled = o.next.disabled;
-      const c = o.chips[y-o.min];
-      if(c && o.strip.clientWidth && o.strip.scrollWidth>o.strip.clientWidth) o.strip.scrollTo({left: c.offsetLeft - o.strip.clientWidth/2 + c.offsetWidth/2});
-    });
-  }
-  ['render','renderCatalog','renderGames'].forEach(n=>{
-    const f = window[n]; if(typeof f!=='function') return;
-    window[n] = function(){ const r = f.apply(this, arguments); sync(); return r; };
-  });
-  sync();
 })();
 </script>
 
