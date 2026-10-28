@@ -9,3 +9,5 @@ Eine kleine Webseite für alle, die sich einen Retro-PC bauen wollen: Baujahr un
 - Fotos und Logos stammen von Wikimedia Commons (freie Lizenzen), der Bildnachweis steht am Ende der Seite.
 
 Privates Hobbyprojekt, nicht kommerziell.
+
+© Benjamin Hohl. Die Versionsnummer steht in der Fußzeile der Seite.
