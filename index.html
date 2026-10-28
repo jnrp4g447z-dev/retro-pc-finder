@@ -1755,7 +1755,7 @@ document.querySelectorAll('.view-btn').forEach(btn=>{
 /* ================= cross-view links ================= */
 function goToCatalog(year, query){
   catState.year = Math.max(YEAR_MIN, Math.min(2010, year));
-  catState.q = (query||'').toLowerCase().trim();
+  catState.q = (query||'').toLowerCase().trim(); catState.sock=null; catState.bus=null;
   document.getElementById('catSearch').value = query||'';
   renderCatalog();
   switchView('catalog');
@@ -1769,7 +1769,7 @@ document.getElementById('gotoKatalogBtn').addEventListener('click',()=>goToCatal
 document.getElementById('gotoRecoBtn').addEventListener('click',()=>goToReco(catState.year));
 
 /* ================= hardware catalog ================= */
-let catState={year:1998, q:''};
+let catState={year:1998, q:'', sock:null, bus:null};
 const CAT_MIN=YEAR_MIN, CAT_MAX=2010;
 
 function catKindPill(kind){
@@ -1779,17 +1779,17 @@ function catKindPill(kind){
 
 function catCpuRow(e){ return wikiInject(catCpuRow0(e),'cpu',e.mfr+' '+e.model); }
 function catCpuRow0(e){
-  const meta=[e.core && ('Kern: '+e.core), e.socket && ('Sockel: '+e.socket), e.clock!=='' && (e.clock+' MHz'), e.cores!=='' && (e.cores+' Kern(e)')].filter(Boolean).join(' · ');
+  const meta=[e.core && ('Kern: '+e.core), e.socket && ('Sockel: '+(window.VK?VK.sockHtml(e.socket):e.socket)), e.clock!=='' && (e.clock+' MHz'), e.cores!=='' && (e.cores+' Kern(e)')].filter(Boolean).join(' · ');
   return `<div class="cat-row">${imgTag(e.img)}<div class="head"><span class="date">${e.date}</span><span class="name">${e.mfr} ${e.model}</span>${catKindPill(e.kind)}</div><div class="meta">${meta}</div>${e.note?`<div class="note">${e.note}</div>`:''}</div>`;
 }
 function catGpuRow(e){ return wikiInject(catGpuRow0(e),'gpu',e.mfr+' '+e.model+' '+(e.chip||'')); }
 function catGpuRow0(e){
-  const meta=[e.chip && ('Chip: '+e.chip), e.clock && (e.clock+' MHz Kerntakt'), e.bus, e.klass && ('Klasse damals: '+e.klass), e.feat].filter(Boolean).join(' · ');
+  const meta=[e.chip && ('Chip: '+e.chip), e.clock && (e.clock+' MHz Kerntakt'), (window.VK?VK.busHtml(e.bus):e.bus), e.klass && ('Klasse damals: '+e.klass), e.feat].filter(Boolean).join(' · ');
   return `<div class="cat-row">${imgTag(e.img)}<div class="head"><span class="date">${e.date}</span><span class="name">${e.mfr} ${e.model}</span>${catKindPill(e.kind)}</div><div class="meta">${meta}</div>${e.note?`<div class="note">${e.note}</div>`:''}</div>`;
 }
 function catSndRow(e){ return wikiInject(catSndRow0(e),'sound',e.mfr+' '+e.model+' '+(e.chip||'')); }
 function catSndRow0(e){
-  const meta=[e.chip && ('Chip: '+e.chip), e.bus, e.midi, e.dos].filter(Boolean).join(' · ');
+  const meta=[e.chip && ('Chip: '+e.chip), (window.VK?VK.busHtml(e.bus):e.bus), e.midi, e.dos].filter(Boolean).join(' · ');
   return `<div class="cat-row">${imgTag(e.img)}<div class="head"><span class="date">${e.date}</span><span class="name">${e.mfr} ${e.model}</span>${catKindPill(e.kind)}</div><div class="meta">${meta}</div>${e.note?`<div class="note">${e.note}</div>`:''}</div>`;
 }
 
@@ -1797,13 +1797,14 @@ function catMatches(e, q){
   return (e.mfr+' '+e.model+' '+(e.core||e.chip||'')).toLowerCase().includes(q);
 }
 function renderCatList(elId, headId, headLabel, list, rowFn, year, q){
-  const rows = q ? list.filter(e=>e.y>=YEAR_MIN && catMatches(e,q)) : list.filter(e=>e.y===year);
-  document.getElementById(headId).textContent = q ? `${headLabel} (${rows.length} Treffer)` : `${headLabel} (${rows.length})`;
+  const F = window.VK ? VK.filter(headLabel) : null;
+  const rows = F ? list.filter(e=>e.y>=YEAR_MIN && F(e)) : (q ? list.filter(e=>e.y>=YEAR_MIN && catMatches(e,q)) : list.filter(e=>e.y===year));
+  document.getElementById(headId).textContent = (q||F) ? `${headLabel} (${rows.length} Treffer)` : `${headLabel} (${rows.length})`;
   const el=document.getElementById(elId);
   if(rows.length){
     el.innerHTML = rows.map(rowFn).join('');
   } else {
-    el.innerHTML = q ? `<div class="cat-empty">Keine ${headLabel} gefunden für „${q}".</div>` : `<div class="cat-empty">Keine erfassten ${headLabel} für ${year}.</div>`;
+    el.innerHTML = (q||F) ? `<div class="cat-empty">Keine ${headLabel} gefunden${q?' für „'+q+'“':' für diesen Filter'}.</div>` : `<div class="cat-empty">Keine erfassten ${headLabel} für ${year}.</div>`;
   }
 }
 
@@ -1819,6 +1820,7 @@ function renderCatalog(){
   const year=catState.year;
   const q=catState.q;
   document.getElementById('catYearDigits').textContent=year;
+  window.VK && VK.hint();
   document.getElementById('catYearSlider').value=year;
   document.getElementById('catYearPrev').disabled = year<=CAT_MIN;
   document.getElementById('catYearNext').disabled = year>=CAT_MAX;
@@ -1852,11 +1854,11 @@ document.getElementById('catYearNext').addEventListener('click',()=>{
   if(catState.year<CAT_MAX){catState.year++;renderCatalog();}
 });
 document.getElementById('catSearch').addEventListener('input',e=>{
-  catState.q=e.target.value.toLowerCase().trim();
+  catState.q=e.target.value.toLowerCase().trim(); catState.sock=null; catState.bus=null;
   renderCatalog();
 });
 document.getElementById('catSearchClear').addEventListener('click',()=>{
-  catState.q='';
+  catState.q=''; catState.sock=null; catState.bus=null;
   document.getElementById('catSearch').value='';
   renderCatalog();
 });
@@ -2334,7 +2336,7 @@ const skState = {mfr:'all', form:'all', q:''};
 function skRow(r){
   const wl = `<a class="wp" href="${r.w}" target="_blank" rel="noopener noreferrer" title="Wikipedia (en): ${r.own?r.n:'Tabelle der x86-Sockel (kein eigener Artikel)'}" aria-label="Wikipedia: ${r.n}">Wiki&nbsp;↗</a>`;
   const meta = ['Pins: '+r.pins, 'Bauform: '+r.pkg, r.type && 'Einsatz: '+r.type, r.bus && 'Bustakt: '+r.bus].filter(Boolean).join(' · ');
-  return `<div class="cat-row">${imgTag(r.img)}<div class="head"><span class="date">${r.date}</span><span class="name"><svg class="cs-ico" viewBox="0 0 24 24" aria-hidden="true">${SK_ICON}</svg>${r.n}${wl}</span><span class="kind-pill">${r.mfr==='Mehrere'?'mehrere Hersteller':r.mfr}</span></div><div class="meta">${meta}</div><div class="cs-src"><b>Prozessoren:</b> ${r.cpus.join(', ')}</div>${r.note?`<div class="cs-src">${r.note}</div>`:''}</div>`;
+  return `<div class="cat-row">${imgTag(r.img)}<div class="head"><span class="date">${r.date}</span><span class="name"><svg class="cs-ico" viewBox="0 0 24 24" aria-hidden="true">${SK_ICON}</svg>${r.n}${wl}</span><span class="kind-pill">${r.mfr==='Mehrere'?'mehrere Hersteller':r.mfr}</span></div><div class="meta">${meta}</div><div class="cs-src"><b>Prozessoren:</b> ${r.cpus.join(', ')}</div>${window.VK?VK.sockCat(r.n):''}${r.note?`<div class="cs-src">${r.note}</div>`:''}</div>`;
 }
 function renderSockets(){
   const inM = SOCKETS.filter(r=>skState.mfr==='all'||r.mfr===skState.mfr);
@@ -2357,35 +2359,36 @@ const SLOTS = [{"g":"ext","s":"Frühe PC-Busse","n":"PC-Bus (8-Bit-ISA)","y":198
 const SL_GROUPS = [["ext","Erweiterungssteckplätze"],["drv","Laufwerks-Schnittstellen"],["port","Externe Anschlüsse"],["misc","RAM, Bildschirm, Karten"]];
 const SL_SUBS = {"ext":["Frühe PC-Busse","PCI-Familie","Grafik (AGP)","Riser-Steckplätze","Notebook-Steckplätze"],"drv":["Frühe Festplatten-Schnittstellen","IDE / ATA (parallel)","SCSI (parallel)","SATA und eSATA","SAS und Fibre Channel","Diskette"],"port":["Seriell (COM)","Parallel (LPT)","Spiele, Tastatur, Maus","USB","FireWire und Infrarot"],"misc":["Arbeitsspeicher-Module","Bildschirmanschlüsse","Speicherkarten"]};
 const SL_ICON = '<rect x="3" y="10" width="18" height="6" rx="1"/><path d="M6 10V7M10 10V7M14 10V7M18 10V7M6 16v3M10 16v3M14 16v3M18 16v3"/>';
-const slState = {grp:'ext', sub:'all', q:''};
+const slState = {grp:'ext', sub:'all', q:'', only:null};
 function slRow(r){
   const wl = `<a class="wp" href="${r.w}" target="_blank" rel="noopener noreferrer" title="Wikipedia (en)" aria-label="Wikipedia: ${r.n}">Wiki&nbsp;↗</a>`;
   const meta = [r.bw && r.bw!=='–' && 'Breite/Bauform: '+r.bw, r.rate && r.rate!=='–' && 'Takt/Datenrate: '+r.rate].filter(Boolean).join(' · ');
-  return `<div class="cat-row">${imgTag(r.img)}<div class="head"><span class="date">${r.date}</span><span class="name"><svg class="cs-ico" viewBox="0 0 24 24" aria-hidden="true">${SL_ICON}</svg>${r.n}${wl}</span><span class="kind-pill">${r.s}</span></div>${meta?`<div class="meta">${meta}</div>`:''}${r.note?`<div class="cs-src">${r.note}</div>`:''}</div>`;
+  return `<div class="cat-row">${imgTag(r.img)}<div class="head"><span class="date">${r.date}</span><span class="name"><svg class="cs-ico" viewBox="0 0 24 24" aria-hidden="true">${SL_ICON}</svg>${r.n}${wl}</span><span class="kind-pill">${r.s}</span></div>${meta?`<div class="meta">${meta}</div>`:''}${r.note?`<div class="cs-src">${r.note}</div>`:''}${window.VK?VK.slotCat(r.n):''}</div>`;
 }
 function renderSlots(){
   const q = slState.q;
-  const inG = SLOTS.filter(r=>q || r.g===slState.grp);
-  document.getElementById('slGrp').innerHTML = SL_GROUPS.map(([k,l])=>`<button class="tier-btn" data-slg="${k}" type="button" aria-pressed="${!q && slState.grp===k}"><span class="lbl">${l}</span><span class="sub">${SLOTS.filter(r=>r.g===k).length} Einträge</span></button>`).join('');
+  const inG = SLOTS.filter(r=>q || slState.only || r.g===slState.grp);
+  document.getElementById('slGrp').innerHTML = SL_GROUPS.map(([k,l])=>`<button class="tier-btn" data-slg="${k}" type="button" aria-pressed="${!q && !slState.only && slState.grp===k}"><span class="lbl">${l}</span><span class="sub">${SLOTS.filter(r=>r.g===k).length} Einträge</span></button>`).join('');
   const subs = q ? [] : SL_SUBS[slState.grp];
   if(slState.sub!=='all' && !subs.includes(slState.sub)) slState.sub='all';
   const sel = document.getElementById('slSub');
   sel.disabled = !!q;
   sel.innerHTML = '<option value="all">Alle Untergruppen</option>' + subs.map(s=>`<option value="${s}"${s===slState.sub?' selected':''}>${s} (${SLOTS.filter(r=>r.g===slState.grp&&r.s===s).length})</option>`).join('');
   const order = r => SL_SUBS[r.g].indexOf(r.s);
-  const rows = inG.filter(r=>(q || slState.sub==='all' || r.s===slState.sub) && (!q || (r.n+' '+r.s+' '+r.bw+' '+r.rate+' '+r.note).toLowerCase().includes(q)))
+  const rows = inG.filter(r=>(!slState.only || new RegExp(slState.only).test(r.n)) && (q || slState.sub==='all' || r.s===slState.sub) && (!q || (r.n+' '+r.s+' '+r.bw+' '+r.rate+' '+r.note).toLowerCase().includes(q)))
                   .sort((a,b)=> q ? (a.g===b.g ? order(a)-order(b) || a.y-b.y : SL_GROUPS.findIndex(x=>x[0]===a.g)-SL_GROUPS.findIndex(x=>x[0]===b.g)) : order(a)-order(b) || a.y-b.y);
-  document.getElementById('slCount').textContent = q ? rows.length+' Treffer in allen Gruppen' : rows.length+' von '+SLOTS.filter(r=>r.g===slState.grp).length+' Einträgen, nach Untergruppe und Jahr sortiert';
+  document.getElementById('slCount').textContent = slState.only ? (SLOTS.filter(r=>new RegExp(slState.only).test(r.n)).length+' Einträge der Familie') : q ? rows.length+' Treffer in allen Gruppen' : rows.length+' von '+SLOTS.filter(r=>r.g===slState.grp).length+' Einträgen, nach Untergruppe und Jahr sortiert';
   let html = '', last = '';
   for(const r of rows){
     if(!q && slState.sub==='all' && r.s!==last){ html += `<div class="sl-sub">${r.s}</div>`; last = r.s; }
     html += slRow(r);
   }
   document.getElementById('slList').innerHTML = html || '<div class="cat-empty">Nichts gefunden.</div>';
+  window.VK && VK.slHint();
 }
-document.getElementById('slGrp').addEventListener('click', e=>{ const b=e.target.closest('[data-slg]'); if(!b) return; slState.grp=b.dataset.slg; slState.sub='all'; slState.q=''; document.getElementById('slSearch').value=''; renderSlots(); });
-document.getElementById('slSub').addEventListener('change', e=>{ slState.sub=e.target.value; renderSlots(); });
-document.getElementById('slSearch').addEventListener('input', e=>{ slState.q=e.target.value.toLowerCase().trim(); renderSlots(); });
+document.getElementById('slGrp').addEventListener('click', e=>{ const b=e.target.closest('[data-slg]'); if(!b) return; slState.only=null; slState.grp=b.dataset.slg; slState.sub='all'; slState.q=''; document.getElementById('slSearch').value=''; renderSlots(); });
+document.getElementById('slSub').addEventListener('change', e=>{ slState.only=null; slState.sub=e.target.value; renderSlots(); });
+document.getElementById('slSearch').addEventListener('input', e=>{ slState.only=null; slState.q=e.target.value.toLowerCase().trim(); renderSlots(); });
 document.getElementById('slSearchClear').addEventListener('click', ()=>{ slState.q=''; document.getElementById('slSearch').value=''; renderSlots(); });
 
 /* ================= grenzen-fallstricke ================= */
@@ -2478,6 +2481,85 @@ document.getElementById('rubPane').addEventListener('click', e=>{
 document.getElementById('rubPane').addEventListener('input', e=>{
   if(e.target.id!=='rubSearch') return; const key = document.getElementById('rubPane').dataset.key; rubState[key].q = e.target.value.toLowerCase().trim(); renderRubric(key);
 });
+
+/* ================= verknuepfungen (Stufe 1) ================= */
+var VK = (function(){
+  const nz = s => s.toLowerCase().replace(/[^a-z0-9+]/g,'');
+  const alias = {};
+  SOCKETS.forEach(r=>{ r.n.split(/ \/ |\(|\)/).map(x=>x.trim()).filter(Boolean).forEach(p=>{ alias[nz(p)] = r.n; }); alias[nz(r.n.replace(/\(.*\)/,''))] = r.n; });
+  Object.assign(alias, {socket1156:'LGA 1156 / Socket H', socket1366:'LGA 1366 / Socket B', socket775:'LGA 775 / Socket T'});
+  function socks(v){
+    if(!v) return [];
+    v = v.replace(/Super Sockel/g,'Super Socket').replace(/Sockel/g,'Socket');
+    const out = []; let prefix = '';
+    v.split(/[\/,]/).map(p=>p.trim()).filter(Boolean).forEach(p=>{
+      if(/^\d+$/.test(p) && prefix) p = prefix+' '+p;
+      const m = p.match(/^(Super Socket|Socket|Slot|LGA|PGA)\b/); if(m) prefix = m[1]==='Super Socket' ? 'Socket' : m[1];
+      const a = alias[nz(p)]; if(a && !out.includes(a)) out.push(a);
+    });
+    return out;
+  }
+  const FAM = {
+    AGP:{re:'^AGP', label:'AGP', first:'AGP 1×'}, PCIe:{re:'^(PCI Express|Mini PCI Express)', label:'PCI Express', first:'PCI Express 1.0a'},
+    PCI:{re:'^(PCI \\(|PCI-X$|Mini PCI$)', label:'PCI', first:'PCI (Conventional PCI)'}, ISA:{re:'^(PC-Bus|ISA \\()', label:'ISA', first:'PC-Bus (8-Bit-ISA)'},
+    VLB:{re:'^VLB', label:'VLB', first:'VLB (VESA Local Bus)'}, MCA:{re:'^MCA', label:'MCA', first:'MCA (Micro Channel)'}, EISA:{re:'^EISA$', label:'EISA', first:'EISA'}, USB:{re:'^USB', label:'USB', first:'USB 1.0'}
+  };
+  function toks(bus){
+    const out = [];
+    (bus||'').split(/[\/,(]/).map(p=>p.trim().replace(/\)$/,'')).forEach(p=>{
+      const m = p.match(/^(PCIe|AGP|PCI|ISA|VLB|USB|MCA|EISA)/i); if(!m) return;
+      const t = m[1].toLowerCase()==='pcie' ? 'PCIe' : m[1].toUpperCase(); if(!out.includes(t)) out.push(t);
+    });
+    return out;
+  }
+  const bySock = {}; CATALOG.cpu.forEach(e=>socks(e.socket).forEach(n=>{ (bySock[n]=bySock[n]||[]).push(e); }));
+  const byBus = {gpu:{}, sound:{}};
+  ['gpu','sound'].forEach(k=>CATALOG[k].forEach(e=>toks(e.bus).forEach(t=>{ byBus[k][t]=(byBus[k][t]||0)+1; })));
+  const A = (attr, v, text) => `<a class="wp" href="#" ${attr}="${v.replace(/"/g,'&quot;')}">${text}&nbsp;↗</a>`;
+  return {
+    socks, toks, bySock, byBus, hintOrig: document.getElementById('catSearchHint').innerHTML,
+    sockHtml(v){ const s = socks(v); if(!s.length) return v; const links = s.length===1 ? A('data-xsock', s[0], 'CPU-Sockel') : s.map(n=>A('data-xsock', n, n.split(' / ')[0])).join(' '); return v+' '+links; },
+    busHtml(b){ if(!b) return b; const t = toks(b).filter(x=>FAM[x]); return t.length ? b+' '+t.map(x=>A('data-xslot', x, FAM[x].label)).join(' ') : b; },
+    sockCat(n){ const l = bySock[n]; return l && l.length ? `<div class="cs-src"><b>Im Katalog:</b> ${A('data-catsock', n, l.length+' Prozessor'+(l.length===1?'':'en'))}</div>` : ''; },
+    slotCat(name){
+      for(const t of Object.keys(FAM)){ if(FAM[t].first===name){ const g = byBus.gpu[t]||0, s = byBus.sound[t]||0; if(!g && !s) return ''; return `<div class="cs-src"><b>Im Katalog (${FAM[t].label}):</b> ${g?A('data-catbus','gpu|'+t, g+' Grafikchips'):''} ${s?A('data-catbus','sound|'+t, s+' Soundkarten'):''}</div>`; } }
+      return '';
+    },
+    filter(label){
+      if(catState.sock){ const sn = catState.sock; return label==='Prozessoren' ? (e=>socks(e.socket).includes(sn)) : (()=>false); }
+      if(catState.bus){ const [k,t] = catState.bus.split('|'); const want = k==='gpu' ? 'Grafikchips' : 'Soundkarten'; return label===want ? (e=>toks(e.bus).includes(t)) : (()=>false); }
+      return null;
+    },
+    hint(){
+      const el = document.getElementById('catSearchHint');
+      if(catState.sock) el.innerHTML = `Filter: Prozessoren mit ${catState.sock}, alle Jahre. ${A('data-xclear','cat','Filter aufheben')}`;
+      else if(catState.bus){ const [k,t] = catState.bus.split('|'); el.innerHTML = `Filter: ${k==='gpu'?'Grafikchips':'Soundkarten'} mit Anschluss ${FAM[t].label}, alle Jahre. ${A('data-xclear','cat','Filter aufheben')}`; }
+      else el.innerHTML = VK.hintOrig;
+    },
+    slHint(){ if(slState.only){ document.getElementById('slCount').insertAdjacentHTML('beforeend', ' '+A('data-xclear','slot','Filter aufheben')); } },
+    fam: FAM
+  };
+})();
+document.addEventListener('click', e=>{
+  const a = e.target.closest('[data-xsock],[data-xslot],[data-catsock],[data-catbus],[data-xclear]'); if(!a) return;
+  e.preventDefault();
+  if(a.dataset.xsock){
+    document.querySelector('[data-view="gen"]').click(); document.querySelector('[data-gencat="socket"]').click();
+    skState.mfr='all'; skState.form='all'; skState.q=a.dataset.xsock.toLowerCase(); document.getElementById('skSearch').value=a.dataset.xsock; renderSockets();
+    document.getElementById('skSearch').scrollIntoView({block:'center'});
+  } else if(a.dataset.xslot){
+    const t = a.dataset.xslot;
+    document.querySelector('[data-view="gen"]').click(); document.querySelector('[data-gencat="slots"]').click();
+    slState.q=''; document.getElementById('slSearch').value=''; slState.sub='all'; slState.only = VK.fam[t].re; renderSlots();
+    document.getElementById('slSearch').scrollIntoView({block:'center'});
+  } else if(a.dataset.catsock){
+    catState.sock = a.dataset.catsock; catState.bus = null; catState.q=''; document.getElementById('catSearch').value=''; renderCatalog(); switchView('catalog');
+  } else if(a.dataset.catbus){
+    catState.bus = a.dataset.catbus; catState.sock = null; catState.q=''; document.getElementById('catSearch').value=''; renderCatalog(); switchView('catalog');
+  } else if(a.dataset.xclear==='cat'){ catState.sock=null; catState.bus=null; renderCatalog(); }
+  else if(a.dataset.xclear==='slot'){ slState.only=null; renderSlots(); }
+});
+renderCatalog();
 </script>
 
 </body></html>
