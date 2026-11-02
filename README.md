@@ -1,10 +1,10 @@
-# Retro-PC-Finder 1990–2010
+# Retro-PC-Finder 1990–2015
 
-Eine kleine Webseite für alle, die sich einen Retro-PC bauen wollen: Baujahr und Preisklasse wählen, dann zeigt die Seite passende Prozessoren, Mainboards, Grafik- und Soundkarten für Intel und AMD, dazu das passende Betriebssystem. Außerdem gibt es einen Hardware-Katalog, die Hardware-Generationen (CPUs, GPUs mit Grafik-APIs, Soundkarten mit Wavetable, externen MIDI-Modulen und Chips, Board-Chipsätze), eine Software-Übersicht (Betriebssysteme 1980–2025, Office, Must-have, Retro-Tools), die Top 15 Games je Jahr (1990–2010, mit Genres), Peripherie (Mäuse, Tastaturen, Joysticks, Lenkräder, mit belegten Jahren), Top-PC-Gehäuse mit Tests und die Shuttle-XPC-Barebones nach Sockel. In der Empfehlung lassen sich die Top 5 Games des Jahres einblenden.
+Eine kleine Webseite für alle, die sich einen Retro-PC bauen wollen: Baujahr und Preisklasse wählen, dann zeigt die Seite passende Prozessoren, Mainboards, Grafik- und Soundkarten für Intel und AMD, dazu das passende Betriebssystem. Außerdem gibt es einen Hardware-Katalog, die Hardware-Generationen (CPUs, GPUs mit Grafik-APIs, Soundkarten mit Wavetable, externen MIDI-Modulen und Chips, Board-Chipsätze), eine Software-Übersicht (Betriebssysteme 1980–2025, Office, Must-have, Retro-Tools), die Top 15 Games je Jahr (1990–2015, mit Genres), alle Spielekonsolen und Handhelds bis heute (ohne Spiele), Peripherie (Mäuse, Tastaturen, Joysticks, Lenkräder, mit belegten Jahren), Top-PC-Gehäuse mit Tests und die Shuttle-XPC-Barebones nach Sockel. In der Empfehlung lassen sich die Top 5 Games des Jahres einblenden.
 
 - Eine einzige Datei: `index.html` (kein Build, keine Abhängigkeiten, keine externen Anfragen: die Schriften IBM Plex und VT323 sind eingebettet, Lizenz SIL Open Font License)
 - Termine sind grobe Richtwerte aus eigener Recherche, keine Gewähr.
-- Die Seite zeigt die Jahre 1990 bis 2010 (`YEAR_MIN` im Skript).
+- Die Seite zeigt die Jahre 1990 bis 2015 (`YEAR_MIN` im Skript); die Konsolen reichen bis heute.
 - Rechts oben lässt sich das Design wechseln: Klassisch Orange, BIOS 1999 (nach Phoenix AwardBIOS), Windows 95, ME und XP.
 - Fotos und Logos stammen von Wikimedia Commons (freie Lizenzen), der Bildnachweis steht am Ende der Seite.
 
